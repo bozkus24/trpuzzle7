@@ -45,13 +45,13 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 4px}
 .board{display:flex;justify-content:center}
 .stack{display:flex;flex-direction:column;gap:9px;justify-content:center;position:relative}
-.stack::before{content:"";position:absolute;left:calc(clamp(38px,10vw,46px)/2 - 1px);top:22%;bottom:22%;width:2px;background:var(--teal);opacity:.35;border-radius:2px;z-index:0}
 .brow{display:flex;align-items:center;gap:9px;position:relative;z-index:1}
-.pct{width:clamp(38px,10vw,46px);flex:none;text-align:center;font-size:13px;font-weight:800;border-radius:9px;padding:6px 0;line-height:1;font-variant-numeric:tabular-nums}
+.pct{width:clamp(44px,11.5vw,54px);flex:none;text-align:center;font-size:12px;font-weight:800;border-radius:9px;padding:6px 0;line-height:1;font-variant-numeric:tabular-nums}
 .pct.top{color:var(--tile-ink);background:linear-gradient(180deg,var(--teal),var(--teal-deep));box-shadow:inset 0 -2px 0 rgba(0,0,0,.22)}
 .pct.bot{color:var(--gold-ink);background:linear-gradient(180deg,var(--gold),var(--gold-deep));box-shadow:inset 0 -2px 0 rgba(0,0,0,.22)}
-.pct.dot{background:none;box-shadow:none;padding:0;display:grid;place-items:center}
-.pct.dot::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(245,185,64,.6)}
+.pct.ghost{visibility:hidden}
+.cline{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2 - 1px);width:2px;background:var(--teal);opacity:.4;border-radius:2px;z-index:0}
+.cdot{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2);width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:0 0 9px rgba(245,185,64,.65);transform:translate(-50%,-50%);z-index:2;transition:top .4s ease}
 .alpha{display:grid;grid-template-columns:repeat(15,1fr);gap:6px 4px;justify-items:center;max-width:430px;margin:16px auto 2px;padding:0 2px}
 .alpha span{width:100%;max-width:26px;aspect-ratio:1;justify-self:center;border-radius:50%;display:grid;place-items:center;font-size:clamp(9px,2.6vw,12px);font-weight:800;line-height:1;color:var(--dim);background:#10222b;border:1px solid #1d3641;opacity:.5;transition:color .2s,opacity .2s,background .2s,border-color .2s}
 .alpha span.in{color:var(--tile-ink);background:linear-gradient(180deg,var(--teal),var(--teal-deep));border-color:transparent;opacity:1;box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
@@ -162,17 +162,19 @@ footer code{color:var(--muted)}
 
   <main id="gameArea">
     <div class="board">
-      <div class="stack">
+      <div class="stack" id="stack">
+        <span class="cline" id="cline" aria-hidden="true"></span>
+        <span class="cdot" id="cdot" aria-hidden="true"></span>
         <div class="brow">
-          <span class="pct top" id="topPct" title="Üstteki kelimenin yakınlığı">%0</span>
+          <span class="pct top" id="topPct" title="Üstteki kelimenin kalan mesafesi">%0</span>
           <div class="tiles bound" id="topTiles"></div>
         </div>
         <div class="brow" id="guessWrap">
-          <span class="pct dot" aria-hidden="true"></span>
+          <span class="pct ghost" aria-hidden="true">%0</span>
           <div class="tiles guess" id="guessTiles"></div>
         </div>
         <div class="brow">
-          <span class="pct bot" id="botPct" title="Alttaki kelimenin yakınlığı">%0</span>
+          <span class="pct bot" id="botPct" title="Alttaki kelimenin kalan mesafesi">%0</span>
           <div class="tiles bound" id="botTiles"></div>
         </div>
       </div>
@@ -198,8 +200,8 @@ footer code{color:var(--muted)}
       <div class="minicap">kavun &lt; <b>sepet</b> &lt; tavuk — alfabetik sıra</div>
     </div>
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
-    <p>Sınıra yerleşen her tahminde gizli kelimeye ne kadar yaklaştığını gösteren <b>% yakınlık</b> ipucunu görürsün.</p>
-    <p class="dim">• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye ne kadar yakın olduğunu gösterir; aralığı daralttıkça yüzde büyür.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! 🎲 ile dilediğin kadar serbest oyun oynayabilirsin (sayfa yenilenince günün oyununa dönersin).</p>
+    <p>Her sınır kelimenin yanında, gizli kelimeye <b>kalan mesafe</b> yüzde olarak yazar; yaklaştıkça küçülür.</p>
+    <p class="dim">• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! 🎲 ile dilediğin kadar serbest oyun oynayabilirsin (sayfa yenilenince günün oyununa dönersin).</p>
   </div>
 </div>
 
@@ -321,6 +323,7 @@ function ensurePlayed(){
 }
 function stars(n){return n<=5?5:n<=8?4:n<=12?3:n<=16?2:1;}
 function closeness(i){return Math.max(1,Math.round(100*(1-Math.abs(secretIdx-i)/(N-1))));}
+function fmtDist(d){return "%"+(Math.abs(d)/(N-1)*100).toFixed(1);}
 
 function submitGuess(){
   if(!ready||done)return;
@@ -329,7 +332,8 @@ function submitGuess(){
   if(!SET.has(w)){toastMsg("Kelime havuzunda yok");shake();return;}
   if(w===secret){steps++;ensurePlayed();winGame();return;}
   var gi=WIDX.get(w);
-  if(gi<=lo||gi>=hi){toastMsg("Bu kelime aralığın dışında ▲▼");shake();return;}
+  if(gi<=lo){toastMsg("Sözlükte "+up(WORDS[lo])+" kelimesinden sonra gelen bir kelime girin ▼");shake();return;}
+  if(gi>=hi){toastMsg("Sözlükte "+up(WORDS[hi])+" kelimesinden önce gelen bir kelime girin ▲");shake();return;}
   steps++;ensurePlayed();
   var pct=closeness(gi);
   if(cmp(w,secret)<0){lo=gi;topPct=pct;flip("top");}
@@ -359,8 +363,8 @@ function render(){
   els.stepsLabel.textContent=steps;
   tileRow(els.topTiles,WORDS[lo]);
   tileRow(els.botTiles,WORDS[hi]);
-  els.topPct.textContent="%"+closeness(lo);
-  els.botPct.textContent="%"+closeness(hi);
+  els.topPct.textContent=fmtDist(secretIdx-lo);
+  els.botPct.textContent=fmtDist(hi-secretIdx);
   /* sıradaki harf için olası aralık: yazılan önek sınır kelimelerle karşılaştırılır */
   var pos=Math.min(input.length,4);
   var pre=input.slice(0,pos);
@@ -387,7 +391,18 @@ function render(){
     if(done){if(ORDER[k]===secret[0])sp.classList.add("hit");}
     else if(k>=la&&k<=lb)sp.classList.add("in");
   }
+  placeConnector();
   els.kb.classList.toggle("off",done);
+}
+function placeConnector(){
+  if(!els.stack||!els.cline)return;
+  var sr=els.stack.getBoundingClientRect();
+  var tc=els.topPct.getBoundingClientRect(),bc=els.botPct.getBoundingClientRect();
+  var topC=(tc.top+tc.height/2)-sr.top,botC=(bc.top+bc.height/2)-sr.top;
+  var f=(hi>lo)?(secretIdx-lo)/(hi-lo):0.5;
+  f=Math.max(0,Math.min(1,f));
+  els.cline.style.top=topC+"px";els.cline.style.height=Math.max(0,botC-topC)+"px";
+  els.cdot.style.top=(topC+f*(botC-topC))+"px";
 }
 function shake(){
   els.guessWrap.classList.remove("shake");
@@ -510,7 +525,8 @@ function bindUI(){
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
+  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
+  window.addEventListener("resize",function(){if(ready)placeConnector();});
   buildAlpha();buildKeyboard();bindUI();
   loadWords().then(function(text){
     WORDS=parseWords(text);N=WORDS.length;
