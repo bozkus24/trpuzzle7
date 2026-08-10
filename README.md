@@ -27,4 +27,4 @@ GitHub Pages'e de doğrudan deploy edilebilir (Settings → Pages → bu dal, k�
 
 `kelimehavuzu.txt` — her satıra bir kelime. Oyun yalnızca **5 harfli** ve Türk
 alfabesindeki harflerden oluşan satırları kullanır (küçük/büyük harf fark etmez,
-şu an 1008 kelime). Dosyayı kendi listenle değiştirmen yeterli; oyun otomatik uyum sağlar.
+şu an 1328 kelime). Dosyayı kendi listenle değiştirmen yeterli; oyun otomatik uyum sağlar.
