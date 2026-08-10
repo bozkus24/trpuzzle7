@@ -28,12 +28,12 @@ GitHub Pages'e de doğrudan deploy edilebilir (Settings → Pages → bu dal, k�
 Oyun iki listeden beslenir; ikisi de her satıra bir kelime, yalnızca **5 harfli**
 ve Türk alfabesindeki harflerden oluşan satırlar kullanılır (küçük/büyük harf fark etmez):
 
-- **`kelimehavuzu.txt`** — *cevap havuzu* (şu an 1328 yaygın kelime). Günün gizli
-  kelimesi **yalnızca buradan** seçilir; böylece bulmaca adil kalır.
-- **`kabul.txt`** — *ek kabul edilen tahminler* (şu an 3223 kelime, Türkçe kök
-  sözlüğünden çekilmiş çekimsiz kökler). Oyuncunun yazabileceği geçerli kelime
-  havuzunu genişletir ama gizli kelime olarak seçilmez.
+- **`kelimehavuzu.txt`** — *cevap havuzu* (şu an 5585 kelime). Günün gizli kelimesi
+  **buradan** seçilir. Ana kelime listesi budur.
+- **`kabul.txt`** — *ek kabul edilen tahminler* (şu an 76 kelime). Cevap havuzunda
+  olmayan ama tahmin olarak yazılabilen fazladan geçerli kelimeler. Gizli kelime
+  olarak seçilmez.
 
-Geçerli tahmin kümesi bu iki listenin birleşimidir (~4550 kelime). `kabul.txt`
+Geçerli tahmin kümesi bu iki listenin birleşimidir (~5661 kelime). `kabul.txt`
 yoksa oyun yalnızca `kelimehavuzu.txt` ile de sorunsuz çalışır. Her iki dosyayı
 da kendi listenle değiştirebilirsin; oyun otomatik uyum sağlar.
