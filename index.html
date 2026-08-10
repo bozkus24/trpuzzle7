@@ -43,22 +43,22 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 
 /* ---------- board ---------- */
 main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 4px}
-.board{display:grid;grid-template-columns:clamp(42px,11.5vw,52px) 1fr 18px;gap:10px;align-items:stretch}
-.rail{position:relative;background:linear-gradient(180deg,#152f39,#0e222b);border:1px solid var(--line);border-radius:99px;overflow:hidden}
-.alpha{display:grid;grid-template-rows:repeat(15,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;align-items:center;justify-items:center;align-content:center;user-select:none}
-.alpha span{width:clamp(15px,2.2vh,21px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:clamp(8px,1.3vh,10.5px);font-weight:800;line-height:1;color:var(--dim);background:#10222b;border:1px solid #1d3641;opacity:.55;transition:color .2s,opacity .2s,background .2s,border-color .2s}
+.board{display:flex;justify-content:center}
+.stack{display:flex;flex-direction:column;gap:9px;justify-content:center;position:relative}
+.stack::before{content:"";position:absolute;left:calc(clamp(38px,10vw,46px)/2 - 1px);top:22%;bottom:22%;width:2px;background:var(--teal);opacity:.35;border-radius:2px;z-index:0}
+.brow{display:flex;align-items:center;gap:9px;position:relative;z-index:1}
+.pct{width:clamp(38px,10vw,46px);flex:none;text-align:center;font-size:13px;font-weight:800;border-radius:9px;padding:6px 0;line-height:1;font-variant-numeric:tabular-nums}
+.pct.top{color:var(--tile-ink);background:linear-gradient(180deg,var(--teal),var(--teal-deep));box-shadow:inset 0 -2px 0 rgba(0,0,0,.22)}
+.pct.bot{color:var(--gold-ink);background:linear-gradient(180deg,var(--gold),var(--gold-deep));box-shadow:inset 0 -2px 0 rgba(0,0,0,.22)}
+.pct.dot{background:none;box-shadow:none;padding:0;display:grid;place-items:center}
+.pct.dot::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(245,185,64,.6)}
+.alpha{display:grid;grid-template-columns:repeat(15,1fr);gap:6px 4px;justify-items:center;max-width:430px;margin:16px auto 2px;padding:0 2px}
+.alpha span{width:100%;max-width:26px;aspect-ratio:1;justify-self:center;border-radius:50%;display:grid;place-items:center;font-size:clamp(9px,2.6vw,12px);font-weight:800;line-height:1;color:var(--dim);background:#10222b;border:1px solid #1d3641;opacity:.5;transition:color .2s,opacity .2s,background .2s,border-color .2s}
 .alpha span.in{color:var(--tile-ink);background:linear-gradient(180deg,var(--teal),var(--teal-deep));border-color:transparent;opacity:1;box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
 .alpha span.hit{color:var(--gold-ink);background:linear-gradient(180deg,var(--gold),var(--gold-deep));border-color:transparent;opacity:1;box-shadow:0 0 10px rgba(245,185,64,.5)}
-.rail .band{position:absolute;left:3px;right:3px;border-radius:99px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));opacity:.85;min-height:8px;transition:top .45s ease,bottom .45s ease}
-.rail .dot{position:absolute;left:50%;width:12px;height:12px;border-radius:50%;background:var(--gold);transform:translate(-50%,-50%);box-shadow:0 0 10px 2px rgba(245,185,64,.55);z-index:3}
-.stack{display:flex;flex-direction:column;gap:8px;justify-content:center}
 .tiles{display:flex;gap:6px;justify-content:center}
 .tile{width:clamp(44px,12.5vw,58px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(20px,6vw,27px);font-weight:800;border-radius:10px}
 .bound .tile{background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink);box-shadow:inset 0 -3px 0 rgba(0,0,0,.28),0 2px 10px rgba(0,0,0,.35)}
-.chiprow{display:flex;justify-content:center;min-height:22px;align-items:center}
-.chip{font-size:12px;font-weight:700;color:var(--teal-soft);background:rgba(24,169,153,.12);border:1px solid rgba(24,169,153,.4);padding:2px 10px;border-radius:999px;font-variant-numeric:tabular-nums}
-.chip[hidden]{display:none}
-.guesswrap{padding:2px 0}
 .guess .tile{background:var(--panel);border:2px dashed var(--line);color:var(--text);position:relative;transition:border-color .15s}
 .guess .tile.filled{border-style:solid;border-color:var(--teal-soft)}
 .guess .tile.next{border-color:rgba(127,214,203,.6)}
@@ -82,13 +82,6 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
   55%{opacity:1}
   100%{transform:translateY(0) rotateX(0) scale(1);opacity:1}
 }
-
-/* ---------- progress ---------- */
-.progress{display:flex;align-items:center;gap:10px;padding:8px 2px 4px}
-.plabel{font-size:12px;color:var(--muted);white-space:nowrap}
-.pbar{flex:1;height:10px;border-radius:99px;background:#10242e;border:1px solid var(--line);overflow:hidden}
-.pfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--teal),var(--gold));width:0%;transition:width .45s ease}
-.ppct{font-size:12px;font-weight:800;color:var(--gold);min-width:40px;text-align:right;font-variant-numeric:tabular-nums}
 
 /* ---------- keyboard ---------- */
 #kb{display:flex;flex-direction:column;gap:7px;padding:8px 0 12px;margin-top:auto}
@@ -169,26 +162,22 @@ footer code{color:var(--muted)}
 
   <main id="gameArea">
     <div class="board">
-      <div class="alpha" id="alpha" aria-hidden="true"></div>
       <div class="stack">
-        <div class="tiles bound" id="topTiles"></div>
-        <div class="chiprow"><span class="chip" id="topChip" hidden></span></div>
-        <div class="guesswrap" id="guessWrap">
+        <div class="brow">
+          <span class="pct top" id="topPct" title="Üstteki kelimenin yakınlığı">%0</span>
+          <div class="tiles bound" id="topTiles"></div>
+        </div>
+        <div class="brow" id="guessWrap">
+          <span class="pct dot" aria-hidden="true"></span>
           <div class="tiles guess" id="guessTiles"></div>
         </div>
-        <div class="chiprow"><span class="chip" id="botChip" hidden></span></div>
-        <div class="tiles bound" id="botTiles"></div>
-      </div>
-      <div class="rail" aria-hidden="true">
-        <div class="band" id="band"></div>
-        <div class="dot" id="dot" hidden></div>
+        <div class="brow">
+          <span class="pct bot" id="botPct" title="Alttaki kelimenin yakınlığı">%0</span>
+          <div class="tiles bound" id="botTiles"></div>
+        </div>
       </div>
     </div>
-    <div class="progress">
-      <span class="plabel">Daralt</span>
-      <div class="pbar"><div class="pfill" id="pfill"></div></div>
-      <span class="ppct num" id="ppct">%0</span>
-    </div>
+    <div class="alpha" id="alpha" aria-hidden="true"></div>
   </main>
 
   <div id="kb" aria-label="Klavye"></div>
@@ -210,7 +199,7 @@ footer code{color:var(--muted)}
     </div>
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
     <p>Sınıra yerleşen her tahminde gizli kelimeye ne kadar yaklaştığını gösteren <b>% yakınlık</b> ipucunu görürsün.</p>
-    <p class="dim">• Soldaki alfabe şeridi ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık yanık renkte görünür (bir şey yazmadıysan baş harf aralığı). Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen şerit tamamen kararır. Sağdaki bant da aralığın ne kadar daraldığını gösterir.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! 🎲 ile dilediğin kadar serbest oyun oynayabilirsin (sayfa yenilenince günün oyununa dönersin).</p>
+    <p class="dim">• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye ne kadar yakın olduğunu gösterir; aralığı daralttıkça yüzde büyür.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! 🎲 ile dilediğin kadar serbest oyun oynayabilirsin (sayfa yenilenince günün oyununa dönersin).</p>
   </div>
 </div>
 
@@ -370,8 +359,8 @@ function render(){
   els.stepsLabel.textContent=steps;
   tileRow(els.topTiles,WORDS[lo]);
   tileRow(els.botTiles,WORDS[hi]);
-  if(topPct!=null){els.topChip.hidden=false;els.topChip.textContent="▼ %"+topPct+" yakın";}else{els.topChip.hidden=true;}
-  if(botPct!=null){els.botChip.hidden=false;els.botChip.textContent="▲ %"+botPct+" yakın";}else{els.botChip.hidden=true;}
+  els.topPct.textContent="%"+closeness(lo);
+  els.botPct.textContent="%"+closeness(hi);
   /* sıradaki harf için olası aralık: yazılan önek sınır kelimelerle karşılaştırılır */
   var pos=Math.min(input.length,4);
   var pre=input.slice(0,pos);
@@ -398,15 +387,6 @@ function render(){
     if(done){if(ORDER[k]===secret[0])sp.classList.add("hit");}
     else if(k>=la&&k<=lb)sp.classList.add("in");
   }
-  var topPos=lo/(N-1)*100,botPos=hi/(N-1)*100;
-  els.band.style.top=topPos+"%";els.band.style.bottom=(100-botPos)+"%";
-  if(done){els.dot.hidden=false;els.dot.style.top=(secretIdx/(N-1)*100)+"%";}else{els.dot.hidden=true;}
-  var remaining=hi-lo-1,p;
-  if(done)p=100;
-  else if(remaining<=1)p=99;
-  else p=Math.round(100*(1-Math.log(remaining)/Math.log(N-2)));
-  p=Math.max(0,Math.min(100,p));
-  els.pfill.style.width=p+"%";els.ppct.textContent="%"+p;
   els.kb.classList.toggle("off",done);
 }
 function shake(){
@@ -530,7 +510,7 @@ function bindUI(){
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topChip","botChip","band","dot","pfill","ppct","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
+  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
   buildAlpha();buildKeyboard();bindUI();
   loadWords().then(function(text){
     WORDS=parseWords(text);N=WORDS.length;
