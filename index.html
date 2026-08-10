@@ -43,10 +43,15 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 
 /* ---------- board ---------- */
 main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 4px}
-.board{display:grid;grid-template-columns:22px 1fr 22px;gap:12px;align-items:stretch}
+.board{display:grid;grid-template-columns:26px 1fr 18px;gap:12px;align-items:stretch}
 .rail{position:relative;background:linear-gradient(180deg,#152f39,#0e222b);border:1px solid var(--line);border-radius:99px;overflow:hidden}
-.rail .cap{position:absolute;left:0;right:0;text-align:center;font-size:10px;font-weight:800;color:var(--dim);z-index:2}
-.rail .cap.a{top:4px}.rail .cap.z{bottom:4px}
+.alpha{display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;line-height:1;padding:1px 0;user-select:none}
+.alpha span{flex:1;display:grid;place-items:center;min-height:0;font-size:clamp(8.5px,1.6vh,11.5px);font-weight:800;color:var(--dim);opacity:.38;transition:color .2s,opacity .2s,background .2s}
+.alpha span.in{color:var(--teal-soft);opacity:1;background:rgba(24,169,153,.16)}
+.alpha span.in.first{border-radius:7px 7px 0 0}
+.alpha span.in.last{border-radius:0 0 7px 7px}
+.alpha span.in.first.last{border-radius:7px}
+.alpha span.hit{color:var(--gold-ink);opacity:1;background:linear-gradient(180deg,var(--gold),var(--gold-deep));border-radius:7px;box-shadow:0 0 10px rgba(245,185,64,.45)}
 .rail .band{position:absolute;left:3px;right:3px;border-radius:99px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));opacity:.85;min-height:8px;transition:top .45s ease,bottom .45s ease}
 .rail .dot{position:absolute;left:50%;width:12px;height:12px;border-radius:50%;background:var(--gold);transform:translate(-50%,-50%);box-shadow:0 0 10px 2px rgba(245,185,64,.55);z-index:3}
 .stack{display:flex;flex-direction:column;gap:8px;justify-content:center}
@@ -156,11 +161,7 @@ footer code{color:var(--muted)}
 
   <main id="gameArea">
     <div class="board">
-      <div class="rail" aria-hidden="true">
-        <span class="cap a">A</span><span class="cap z">Z</span>
-        <div class="band" id="band"></div>
-        <div class="dot" id="dot" hidden></div>
-      </div>
+      <div class="alpha" id="alpha" aria-hidden="true"></div>
       <div class="stack">
         <div class="tiles bound" id="topTiles"></div>
         <div class="chiprow"><span class="chip" id="topChip" hidden></span></div>
@@ -170,7 +171,10 @@ footer code{color:var(--muted)}
         <div class="chiprow"><span class="chip" id="botChip" hidden></span></div>
         <div class="tiles bound" id="botTiles"></div>
       </div>
-      <div class="rail" aria-hidden="true" style="visibility:hidden"></div>
+      <div class="rail" aria-hidden="true">
+        <div class="band" id="band"></div>
+        <div class="dot" id="dot" hidden></div>
+      </div>
     </div>
     <div class="progress">
       <span class="plabel">Daralt</span>
@@ -198,7 +202,7 @@ footer code{color:var(--muted)}
     </div>
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
     <p>Sınıra yerleşen her tahminde gizli kelimeye ne kadar yaklaştığını gösteren <b>% yakınlık</b> ipucunu görürsün.</p>
-    <p class="dim">• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! 🎲 ile dilediğin kadar serbest oyun oynayabilirsin (sayfa yenilenince günün oyununa dönersin).</p>
+    <p class="dim">• Soldaki alfabe şeridi ipucudur: gizli kelimenin <b>baş harfinin</b> olabileceği aralık yanık renkte görünür, elenen harfler söner. Sağdaki bant da aralığın ne kadar daraldığını gösterir.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! 🎲 ile dilediğin kadar serbest oyun oynayabilirsin (sayfa yenilenince günün oyununa dönersin).</p>
   </div>
 </div>
 
@@ -367,6 +371,17 @@ function render(){
     if(ch){t.textContent=up(ch);t.classList.add("filled");}
     g.appendChild(t);
   }
+  var la=IDX.get(WORDS[lo][0]),lb=IDX.get(WORDS[hi][0]);
+  for(var k=0;k<els.alpha.children.length;k++){
+    var sp=els.alpha.children[k];
+    sp.classList.remove("in","first","last","hit");
+    if(done){if(ORDER[k]===secret[0])sp.classList.add("hit");}
+    else if(k>=la&&k<=lb){
+      sp.classList.add("in");
+      if(k===la)sp.classList.add("first");
+      if(k===lb)sp.classList.add("last");
+    }
+  }
   var topPos=lo/(N-1)*100,botPos=hi/(N-1)*100;
   els.band.style.top=topPos+"%";els.band.style.bottom=(100-botPos)+"%";
   if(done){els.dot.hidden=false;els.dot.style.top=(secretIdx/(N-1)*100)+"%";}else{els.dot.hidden=true;}
@@ -399,6 +414,12 @@ function toastMsg(m){
 var ROWS=[["e","r","t","y","u","ı","o","p","ğ","ü"],
           ["a","s","d","f","g","h","j","k","l","ş","i"],
           ["ENTER","z","c","v","b","n","m","ö","ç","BACK"]];
+function buildAlpha(){
+  els.alpha.innerHTML="";
+  ORDER.forEach(function(c){
+    var s=document.createElement("span");s.textContent=up(c);els.alpha.appendChild(s);
+  });
+}
 function buildKeyboard(){
   els.kb.innerHTML="";
   ROWS.forEach(function(row){
@@ -487,8 +508,8 @@ function bindUI(){
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topChip","botChip","band","dot","pfill","ppct","kb","toast","poolCount"].forEach(function(id){els[id]=document.getElementById(id);});
-  buildKeyboard();bindUI();
+  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topChip","botChip","band","dot","pfill","ppct","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
+  buildAlpha();buildKeyboard();bindUI();
   loadWords().then(function(text){
     WORDS=parseWords(text);N=WORDS.length;
     if(N<10)throw new Error("az");
