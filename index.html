@@ -210,7 +210,7 @@ footer code{color:var(--muted)}
 
   <div id="kb" aria-label="Klavye"></div>
 
-  <footer>Kelime havuzu: <code>kelimehavuzu.txt</code> · <span id="poolCount">—</span> kelime</footer>
+  <footer>Kelime havuzu: <span id="poolCount">—</span></footer>
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>
@@ -244,7 +244,7 @@ footer code{color:var(--muted)}
     </div>
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
     <p>Her sınır kelimenin yanında, gizli kelimeye <b>kalan mesafe</b> yüzde olarak yazar; yaklaştıkça küçülür.</p>
-    <p class="dim">• Başta üst ve alt kutular <b>boştur</b> ve rozetlerde <b>?</b> görünür. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir ve rozetinde kalan mesafe % olarak belirir; karşı taraf sen o yönde tahmin edene kadar <b>?</b> kalır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. 🗓️ <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri ✓ olarak görebilirsin.</p>
+    <p class="dim">• Başta üst ve alt kutular <b>boştur</b> ve rozetlerde <b>?</b> görünür. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir ve rozetinde kalan mesafe % olarak belirir; karşı taraf sen o yönde tahmin edene kadar <b>?</b> kalır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminlerin geçerli bir Türkçe kelime olmalı — binlerce kelime kabul edilir. Gizli kelime ise yaygın kelimelerden (cevap havuzu) seçilir.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. 🗓️ <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri ✓ olarak görebilirsin.</p>
   </div>
 </div>
 
@@ -294,7 +294,7 @@ function cmp(a,b){
 }
 
 /* ---------- durum ---------- */
-var WORDS=[],WIDX=new Map(),SET=new Set(),N=0;
+var WORDS=[],WIDX=new Map(),SET=new Set(),N=0,ANSWERS=[];
 var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,input="";
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
 var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v1";
@@ -305,13 +305,19 @@ var els={};
 
 /* ---------- kelime havuzu ---------- */
 function loadWords(){
-  if(typeof window.EMBEDDED_WORDS==="string"){return Promise.resolve(window.EMBEDDED_WORDS);}
-  return fetch("kelimehavuzu.txt",{cache:"no-store"}).then(function(r){
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    return r.text();
+  // [cevapMetni, kabulMetni] döner: cevaplar gizli kelime; kabul = ek geçerli tahminler
+  if(typeof window.EMBEDDED_WORDS==="string"){
+    return Promise.resolve([window.EMBEDDED_WORDS,(typeof window.EMBEDDED_ACCEPT==="string")?window.EMBEDDED_ACCEPT:""]);
+  }
+  var ans=fetch("kelimehavuzu.txt",{cache:"no-store"}).then(function(r){
+    if(!r.ok)throw new Error("HTTP "+r.status);return r.text();
   });
+  var acc=fetch("kabul.txt",{cache:"no-store"}).then(function(r){
+    return r.ok?r.text():"";
+  }).catch(function(){return "";});
+  return Promise.all([ans,acc]);
 }
-function parseWords(text){
+function parseSet(text){
   var set=new Set();
   text.split(/\s+/).forEach(function(w){
     w=low(w.trim());
@@ -319,8 +325,7 @@ function parseWords(text){
     for(var i=0;i<5;i++){if(!IDX.has(w[i]))return;}
     set.add(w);
   });
-  var arr=Array.from(set).sort(cmp);
-  return arr;
+  return set;
 }
 
 /* ---------- gün & gizli kelime ---------- */
@@ -328,10 +333,20 @@ function todayNum(){
   var n=new Date();
   return Math.round((new Date(n.getFullYear(),n.getMonth(),n.getDate())-EPOCH)/864e5);
 }
-function dailyIdx(day){
+function dayHash(day){
   var x=Math.imul(day+11,2654435761)>>>0;
   x=(x^(x>>>13))>>>0;x=Math.imul(x,1274126177)>>>0;x=(x^(x>>>16))>>>0;
-  return 1+x%(N-2);
+  return x;
+}
+/* Gizli kelime CEVAP havuzundan (yaygın kelimeler) seçilir; indeksi tüm WORDS içindeki yeri */
+function secretForDay(day){
+  var base=dayHash(day)%ANSWERS.length;
+  for(var t=0;t<ANSWERS.length;t++){
+    var w=ANSWERS[(base+t)%ANSWERS.length];
+    var i=WIDX.get(w);
+    if(i>0&&i<N-1)return i;
+  }
+  return 1;
 }
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function dateOf(day){return new Date(EPOCH.getTime()+day*864e5);}
@@ -365,13 +380,13 @@ function restoreDay(){
 
 /* ---------- oyun akışı ---------- */
 function startDaily(){
-  mode="daily";dayNo=todayNum();secretIdx=dailyIdx(dayNo);secret=WORDS[secretIdx];
+  mode="daily";dayNo=todayNum();secretIdx=secretForDay(dayNo);secret=WORDS[secretIdx];
   lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=false;
   restoreDay();render();
 }
 function startArchive(day){
   if(day===todayNum()){startDaily();return;}
-  mode="archive";dayNo=day;secretIdx=dailyIdx(day);secret=WORDS[secretIdx];
+  mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
   lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=true;
   closeModals();render();toastMsg("Arşiv oyunu · "+fmtDate(day));
 }
@@ -623,11 +638,15 @@ document.addEventListener("DOMContentLoaded",function(){
   ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
   window.addEventListener("resize",function(){if(ready)placeConnector();});
   buildAlpha();buildKeyboard();bindUI();
-  loadWords().then(function(text){
-    WORDS=parseWords(text);N=WORDS.length;
-    if(N<10)throw new Error("az");
+  loadWords().then(function(texts){
+    var ansSet=parseSet(texts[0]),accSet=parseSet(texts[1]||"");
+    if(ansSet.size<10)throw new Error("az");
+    // WORDS = cevaplar ∪ ek kabul edilenler (tümü geçerli tahmin); ANSWERS = gizli kelime adayları
+    var uni=new Set(ansSet);accSet.forEach(function(w){uni.add(w);});
+    WORDS=Array.from(uni).sort(cmp);N=WORDS.length;
     WORDS.forEach(function(w,i){WIDX.set(w,i);SET.add(w);});
-    els.poolCount.textContent=N;
+    ANSWERS=Array.from(ansSet).sort(cmp);
+    els.poolCount.textContent=N+" kelime · "+ANSWERS.length+" cevap";
     ready=true;
     startDaily();
     $("#homeDate").textContent=fmtDate(todayNum())+" · #"+(todayNum()+1);
@@ -636,7 +655,7 @@ document.addEventListener("DOMContentLoaded",function(){
   });
   if(new URLSearchParams(location.search).has("debug")){
     window.__aradle={
-      state:function(){return {N:N,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,mode:mode,today:todayNum(),words:WORDS};},
+      state:function(){return {N:N,answers:ANSWERS.length,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,mode:mode,today:todayNum(),words:WORDS,inAnswers:ANSWERS.indexOf(secret)>=0};},
       guess:function(w){input=low(w);submitGuess();},
       archive:function(day){startArchive(day);},
       daily:startDaily,

@@ -23,8 +23,17 @@ python3 -m http.server 8000
 
 GitHub Pages'e de doğrudan deploy edilebilir (Settings → Pages → bu dal, kök klasör).
 
-## Kelime havuzu
+## Kelime havuzu (iki katman)
 
-`kelimehavuzu.txt` — her satıra bir kelime. Oyun yalnızca **5 harfli** ve Türk
-alfabesindeki harflerden oluşan satırları kullanır (küçük/büyük harf fark etmez,
-şu an 1328 kelime). Dosyayı kendi listenle değiştirmen yeterli; oyun otomatik uyum sağlar.
+Oyun iki listeden beslenir; ikisi de her satıra bir kelime, yalnızca **5 harfli**
+ve Türk alfabesindeki harflerden oluşan satırlar kullanılır (küçük/büyük harf fark etmez):
+
+- **`kelimehavuzu.txt`** — *cevap havuzu* (şu an 1328 yaygın kelime). Günün gizli
+  kelimesi **yalnızca buradan** seçilir; böylece bulmaca adil kalır.
+- **`kabul.txt`** — *ek kabul edilen tahminler* (şu an 3223 kelime, Türkçe kök
+  sözlüğünden çekilmiş çekimsiz kökler). Oyuncunun yazabileceği geçerli kelime
+  havuzunu genişletir ama gizli kelime olarak seçilmez.
+
+Geçerli tahmin kümesi bu iki listenin birleşimidir (~4550 kelime). `kabul.txt`
+yoksa oyun yalnızca `kelimehavuzu.txt` ile de sorunsuz çalışır. Her iki dosyayı
+da kendi listenle değiştirebilirsin; oyun otomatik uyum sağlar.
