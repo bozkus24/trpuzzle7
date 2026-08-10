@@ -59,6 +59,7 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 .tiles{display:flex;gap:6px;justify-content:center}
 .tile{width:clamp(44px,12.5vw,58px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(20px,6vw,27px);font-weight:800;border-radius:10px}
 .bound .tile{background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink);box-shadow:inset 0 -3px 0 rgba(0,0,0,.28),0 2px 10px rgba(0,0,0,.35)}
+.tiles.empty .tile{background:var(--panel);border:2px dashed var(--line);box-shadow:none;color:transparent}
 .guess .tile{background:var(--panel);border:2px dashed var(--line);color:var(--text);position:relative;transition:border-color .15s}
 .guess .tile.filled{border-style:solid;border-color:var(--teal-soft)}
 .guess .tile.next{border-color:rgba(127,214,203,.6)}
@@ -124,6 +125,15 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 .btn{padding:12px 20px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.4px}
 .btn.gold{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:var(--gold-ink);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
 .btn.ghost{background:var(--panel);color:var(--teal-soft);border:1px solid var(--line)}
+.arclist{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:60vh;overflow-y:auto;padding-right:2px}
+.arcrow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 12px;transition:background .12s}
+.arcrow:hover{background:var(--key)}
+.arcrow.today{border-color:var(--teal);box-shadow:inset 0 0 0 1px rgba(24,169,153,.4)}
+.arcinfo{display:flex;flex-direction:column;gap:2px;min-width:0}
+.arcinfo b{font-size:14px;color:var(--text);font-variant-numeric:tabular-nums}
+.arcinfo span{font-size:12px;color:var(--muted)}
+.arcstat{font-size:12.5px;font-weight:800;color:var(--teal-soft);white-space:nowrap}
+.arcstat.ok{color:var(--gold)}
 footer{text-align:center;font-size:11.5px;color:var(--dim);padding:4px 0 8px}
 footer code{color:var(--muted)}
 #fatal{display:none;text-align:center;padding:40px 18px;color:var(--muted);font-size:14px;line-height:1.6}
@@ -148,7 +158,7 @@ footer code{color:var(--muted)}
       <span class="ar">▲▼</span>
     </div>
     <div class="hgroup">
-      <button class="iconbtn" id="btnFree" aria-label="Serbest oyun" title="Serbest oyun">🎲</button>
+      <button class="iconbtn" id="btnFree" aria-label="Arşiv" title="Arşiv">🗓️</button>
       <button class="iconbtn" id="btnStats" aria-label="İstatistikler" title="İstatistikler">📊</button>
     </div>
   </header>
@@ -201,7 +211,7 @@ footer code{color:var(--muted)}
     </div>
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
     <p>Her sınır kelimenin yanında, gizli kelimeye <b>kalan mesafe</b> yüzde olarak yazar; yaklaştıkça küçülür.</p>
-    <p class="dim">• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! 🎲 ile dilediğin kadar serbest oyun oynayabilirsin (sayfa yenilenince günün oyununa dönersin).</p>
+    <p class="dim">• Başta üst ve alt kutular <b>boştur</b>. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir, karşı taraf boş kalır. Boş tarafın yüzdesi, sözlüğün <b>ilk/son kelimesi</b> oradaymış gibi hesaplanır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminler kelime havuzunda olmalı.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. 🗓️ <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri ✓ olarak görebilirsin.</p>
   </div>
 </div>
 
@@ -221,9 +231,17 @@ footer code{color:var(--muted)}
       <div id="winWord"></div>
       <div class="btnrow">
         <button class="btn gold" id="btnShare">📋 Paylaş</button>
-        <button class="btn ghost" id="btnFree2">🎲 Serbest Oyun</button>
+        <button class="btn ghost" id="btnFree2">🗓️ Arşiv</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="overlay" id="archiveModal" role="dialog" aria-modal="true" aria-label="Arşiv">
+  <div class="modal">
+    <div class="mhead"><h2>Arşiv</h2><button class="x" data-close aria-label="Kapat">✕</button></div>
+    <p class="dim">Son 3 ayın günlük bulmacaları. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler ✓ ile işaretlenir.</p>
+    <div class="arclist" id="arclist"></div>
   </div>
 </div>
 
@@ -245,7 +263,7 @@ function cmp(a,b){
 /* ---------- durum ---------- */
 var WORDS=[],WIDX=new Map(),SET=new Set(),N=0;
 var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,input="";
-var mode="daily",dayNo=0,topPct=null,botPct=null,countedPlayed=false,ready=false;
+var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
 var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v1";
 var EPOCH=new Date(2026,0,1);
 
@@ -282,6 +300,12 @@ function dailyIdx(day){
   x=(x^(x>>>13))>>>0;x=Math.imul(x,1274126177)>>>0;x=(x^(x>>>16))>>>0;
   return 1+x%(N-2);
 }
+var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+function dateOf(day){return new Date(EPOCH.getTime()+day*864e5);}
+function fmtDate(day){var d=dateOf(day);return d.getDate()+" "+MONTHS[d.getMonth()]+" "+d.getFullYear();}
+var KEY_ARC="aradle_solved_v1";
+function loadArc(){try{var o=JSON.parse(localStorage.getItem(KEY_ARC));return (o&&typeof o==="object")?o:{};}catch(e){return {};}}
+function markSolved(day,st){try{var o=loadArc();var k=String(day);if(o[k]==null||st<o[k])o[k]=st;localStorage.setItem(KEY_ARC,JSON.stringify(o));}catch(e){}}
 
 /* ---------- kalıcılık ---------- */
 function loadStats(){
@@ -293,7 +317,7 @@ function loadStats(){
 function saveStats(s){try{localStorage.setItem(KEY_STATS,JSON.stringify(s));}catch(e){}}
 function saveDay(){
   if(mode!=="daily")return;
-  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],steps:steps,done:done,played:countedPlayed,tp:topPct,bp:botPct}));}catch(e){}
+  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,played:countedPlayed}));}catch(e){}
 }
 function restoreDay(){
   var s=null;
@@ -303,19 +327,20 @@ function restoreDay(){
   if(ti===undefined||bi===undefined||!(ti<bi))return;
   if(!s.done&&!(ti<secretIdx&&secretIdx<bi))return;
   lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;countedPlayed=!!s.played;
-  topPct=(typeof s.tp==="number")?s.tp:null;botPct=(typeof s.bp==="number")?s.bp:null;
+  topSet=!!s.ts;botSet=!!s.bs;
 }
 
 /* ---------- oyun akışı ---------- */
 function startDaily(){
   mode="daily";dayNo=todayNum();secretIdx=dailyIdx(dayNo);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;input="";topPct=null;botPct=null;countedPlayed=false;
+  lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=false;
   restoreDay();render();
 }
-function startFree(){
-  mode="free";secretIdx=1+Math.floor(Math.random()*(N-2));secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;input="";topPct=null;botPct=null;countedPlayed=true;
-  closeModals();render();toastMsg("Serbest oyun başladı 🎲");
+function startArchive(day){
+  if(day===todayNum()){startDaily();return;}
+  mode="archive";dayNo=day;secretIdx=dailyIdx(day);secret=WORDS[secretIdx];
+  lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=true;
+  closeModals();render();toastMsg("Arşiv oyunu · "+fmtDate(day));
 }
 function ensurePlayed(){
   if(mode!=="daily"||countedPlayed)return;
@@ -335,13 +360,13 @@ function submitGuess(){
   if(gi<=lo){toastMsg("Sözlükte "+up(WORDS[lo])+" kelimesinden sonra gelen bir kelime girin ▼");shake();return;}
   if(gi>=hi){toastMsg("Sözlükte "+up(WORDS[hi])+" kelimesinden önce gelen bir kelime girin ▲");shake();return;}
   steps++;ensurePlayed();
-  var pct=closeness(gi);
-  if(cmp(w,secret)<0){lo=gi;topPct=pct;flip("top");}
-  else{hi=gi;botPct=pct;flip("bot");}
+  if(cmp(w,secret)<0){lo=gi;topSet=true;flip("top");}
+  else{hi=gi;botSet=true;flip("bot");}
   input="";render();saveDay();
 }
 function winGame(){
   done=true;input="";
+  markSolved(dayNo,steps);
   if(mode==="daily"){
     var s=loadStats();
     s.wins++;s.totalSteps+=steps;
@@ -356,13 +381,15 @@ function winGame(){
 /* ---------- görünüm ---------- */
 function tileRow(el,word){
   el.innerHTML="";
-  for(var i=0;i<5;i++){var t=document.createElement("div");t.className="tile";t.textContent=up(word[i]);el.appendChild(t);}
+  for(var i=0;i<5;i++){var t=document.createElement("div");t.className="tile";if(word)t.textContent=up(word[i]);el.appendChild(t);}
 }
 function render(){
-  els.modeLabel.textContent=(mode==="daily")?("Günün Oyunu #"+(dayNo+1)):"Serbest Oyun";
+  els.modeLabel.textContent=(mode==="daily")?("Günün Oyunu #"+(dayNo+1)):("Arşiv #"+(dayNo+1)+" · "+fmtDate(dayNo));
   els.stepsLabel.textContent=steps;
-  tileRow(els.topTiles,WORDS[lo]);
-  tileRow(els.botTiles,WORDS[hi]);
+  tileRow(els.topTiles,topSet?WORDS[lo]:null);
+  tileRow(els.botTiles,botSet?WORDS[hi]:null);
+  els.topTiles.classList.toggle("empty",!topSet);
+  els.botTiles.classList.toggle("empty",!botSet);
   els.topPct.textContent=fmtDist(secretIdx-lo);
   els.botPct.textContent=fmtDist(hi-secretIdx);
   /* sıradaki harf için olası aralık: yazılan önek sınır kelimelerle karşılaştırılır */
@@ -460,8 +487,31 @@ function handleKey(k){
 }
 
 /* ---------- modallar ---------- */
-function modalOpen(){return $("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open");}
-function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");}
+function modalOpen(){return $("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open")||$("#archiveModal").classList.contains("open");}
+function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");$("#archiveModal").classList.remove("open");}
+function openArchive(){
+  closeModals();
+  var t=todayNum(),arc=loadArc(),host=$("#arclist");host.innerHTML="";
+  for(var i=0;i<90;i++){
+    var day=t-i;if(day<0)break;
+    host.appendChild(arcRow(day,t,arc[String(day)]));
+  }
+  $("#archiveModal").classList.add("open");
+}
+function arcRow(day,today,solved){
+  var row=document.createElement("button");
+  row.className="arcrow"+(day===today?" today":"");
+  var info=document.createElement("div");info.className="arcinfo";
+  var num=document.createElement("b");num.textContent="#"+(day+1)+(day===today?" · Bugün":"");
+  var dt=document.createElement("span");dt.textContent=fmtDate(day);
+  info.appendChild(num);info.appendChild(dt);
+  var stat=document.createElement("div");
+  if(solved!=null){stat.className="arcstat ok";stat.textContent="✓ "+solved+" adım";}
+  else{stat.className="arcstat";stat.textContent="Oyna ›";}
+  row.appendChild(info);row.appendChild(stat);
+  row.addEventListener("click",function(){startArchive(day);});
+  return row;
+}
 function openHelp(){closeModals();$("#helpModal").classList.add("open");}
 function openStats(){
   closeModals();
@@ -483,7 +533,7 @@ function openStats(){
 }
 function shareResult(){
   var st=stars(steps);
-  var head=(mode==="daily")?("Aradle #"+(dayNo+1)):"Aradle (Serbest)";
+  var head=(mode==="daily")?("Aradle #"+(dayNo+1)):("Aradle Arşiv #"+(dayNo+1));
   var txt=head+" "+"⭐".repeat(st)+"☆".repeat(5-st)+"\nGizli kelimeyi "+steps+" adımda buldum! ▲🎯▼";
   function fallback(){
     var ta=document.createElement("textarea");ta.value=txt;
@@ -516,8 +566,8 @@ function bindUI(){
   });
   $("#btnHelp").addEventListener("click",openHelp);
   $("#btnStats").addEventListener("click",function(){openStats();});
-  $("#btnFree").addEventListener("click",startFree);
-  $("#btnFree2").addEventListener("click",startFree);
+  $("#btnFree").addEventListener("click",openArchive);
+  $("#btnFree2").addEventListener("click",openArchive);
   $("#btnShare").addEventListener("click",shareResult);
   document.querySelectorAll(".overlay").forEach(function(ov){
     ov.addEventListener("click",function(e){if(e.target===ov||e.target.closest("[data-close]"))closeModals();});
@@ -543,9 +593,11 @@ document.addEventListener("DOMContentLoaded",function(){
   });
   if(new URLSearchParams(location.search).has("debug")){
     window.__aradle={
-      state:function(){return {N:N,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,mode:mode,words:WORDS};},
+      state:function(){return {N:N,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,mode:mode,today:todayNum(),words:WORDS};},
       guess:function(w){input=low(w);submitGuess();},
-      free:startFree
+      archive:function(day){startArchive(day);},
+      daily:startDaily,
+      openArchive:openArchive
     };
   }
 });
