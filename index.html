@@ -69,10 +69,19 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 .guess.win .tile:nth-child(2){animation-delay:.07s}.guess.win .tile:nth-child(3){animation-delay:.14s}
 .guess.win .tile:nth-child(4){animation-delay:.21s}.guess.win .tile:nth-child(5){animation-delay:.28s}
 .shake{animation:shake .45s}
-.flip .tile{animation:flip .5s}
+.tiles.bound{perspective:520px}
+.land .tile{animation:land .5s cubic-bezier(.22,.75,.28,1.12) both}
+.land .tile:nth-child(2){animation-delay:.09s}
+.land .tile:nth-child(3){animation-delay:.18s}
+.land .tile:nth-child(4){animation-delay:.27s}
+.land .tile:nth-child(5){animation-delay:.36s}
 @keyframes pop{0%{transform:scale(.6);opacity:.2}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
 @keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
-@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(88deg)}100%{transform:rotateX(0)}}
+@keyframes land{
+  0%{transform:translateY(var(--fly,0px)) rotateX(55deg) scale(1.06);opacity:.12}
+  55%{opacity:1}
+  100%{transform:translateY(0) rotateX(0) scale(1);opacity:1}
+}
 
 /* ---------- progress ---------- */
 .progress{display:flex;align-items:center;gap:10px;padding:8px 2px 4px}
@@ -406,9 +415,15 @@ function shake(){
   els.guessWrap.classList.add("shake");
 }
 function flip(which){
-  var el=(which==="top")?els.topTiles:els.botTiles;
-  el.classList.add("flip");
-  setTimeout(function(){el.classList.remove("flip");},550);
+  /* tahmin satırından sınır satırına uçuş mesafesi; render satır konumlarını değiştirmez */
+  var row=(which==="top")?els.topTiles:els.botTiles;
+  var fly=els.guessTiles.getBoundingClientRect().top-row.getBoundingClientRect().top;
+  row.style.setProperty("--fly",fly+"px");
+  row.classList.remove("land");
+  void row.offsetWidth;
+  row.classList.add("land");
+  clearTimeout(row._landT);
+  row._landT=setTimeout(function(){row.classList.remove("land");},950);
 }
 var toastTimer=null;
 function toastMsg(m){
