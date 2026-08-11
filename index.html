@@ -37,9 +37,20 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 .logo .lt{width:23px;height:23px;border-radius:6px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink);font-weight:900;font-size:13px;display:grid;place-items:center;box-shadow:inset 0 -2px 0 rgba(0,0,0,.25)}
 .logo .lt.g{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:var(--gold-ink)}
 .logo .ar{display:flex;flex-direction:column;line-height:.9;font-size:10px;color:var(--gold);margin:0 3px}
-.sub{display:flex;justify-content:space-between;align-items:center;padding:8px 2px 2px;color:var(--muted);font-size:13px;letter-spacing:.4px}
-.sub b{color:var(--teal-soft);font-weight:700}
-.sub .num{font-variant-numeric:tabular-nums}
+.sub{display:flex;justify-content:center;align-items:center;padding:8px 2px 0;color:var(--muted);font-size:13px;letter-spacing:.4px}
+.statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 2px}
+.sbcol{display:flex;flex-direction:column;gap:2px;min-width:46px}
+.sbcol.right{align-items:flex-end}
+.sblbl{font-size:10px;font-weight:800;letter-spacing:.9px;color:var(--muted)}
+.sbval{font-size:17px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
+.sbcol.lose .sbval{color:var(--bad)}
+.pips{display:flex;align-items:center;gap:clamp(3px,1.3vw,5px);justify-content:center;flex:1}
+.pip{width:clamp(8px,2.3vw,11px);height:clamp(8px,2.3vw,11px);border-radius:50%;background:#2b4a56;flex:none;transition:background .2s,box-shadow .2s,transform .2s}
+.pip.gap{margin-left:clamp(6px,2.2vw,12px)}
+.pip.used{background:#16303a}
+.pip.cur{background:var(--gold);box-shadow:0 0 7px rgba(245,185,64,.65);transform:scale(1.12)}
+.pip.win{background:var(--teal)}
+.pip.lost{background:var(--bad);opacity:.85}
 
 /* ---------- board ---------- */
 main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 4px}
@@ -67,6 +78,8 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 .guess.oob .tile.filled{border-color:rgba(229,72,77,.7)}
 .guess .tile:not(.filled)::before{content:"•";color:var(--dim);font-size:.8em}
 .guess.win .tile{background:linear-gradient(180deg,var(--gold),var(--gold-deep));border:none;color:var(--gold-ink);box-shadow:inset 0 -3px 0 rgba(0,0,0,.22),0 0 18px rgba(245,185,64,.35);animation:pop .5s both}
+.guess.lost .tile{background:#3a2226;border:2px solid var(--bad);color:#ffd9da;box-shadow:none;animation:pop .4s both}
+.guess.lost .tile::before{content:none}
 .guess.win .tile::before{content:none}
 .guess.win .tile:nth-child(2){animation-delay:.07s}.guess.win .tile:nth-child(3){animation-delay:.14s}
 .guess.win .tile:nth-child(4){animation-delay:.21s}.guess.win .tile:nth-child(5){animation-delay:.28s}
@@ -130,6 +143,9 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 .wstar{width:30px;height:30px}
 #winMsg{font-size:15px;color:var(--text)}
 #winWord{font-size:22px;font-weight:900;letter-spacing:6px;color:var(--gold);margin:8px 0 2px}
+#winBox.lostbox{border-color:rgba(229,72,77,.45)}
+#winBox.lostbox #winStars{color:var(--dim)}
+#winBox.lostbox #winWord{color:var(--bad)}
 .btnrow{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.4px}
 .btn.gold{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:var(--gold-ink);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
@@ -141,8 +157,9 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 .arcinfo{display:flex;flex-direction:column;gap:2px;min-width:0}
 .arcinfo b{font-size:14px;color:var(--text);font-variant-numeric:tabular-nums}
 .arcinfo span{font-size:12px;color:var(--muted)}
-.arcstat{font-size:12.5px;font-weight:800;color:var(--teal-soft);white-space:nowrap}
+.arcstat{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:800;color:var(--teal-soft);white-space:nowrap}
 .arcstat.ok{color:var(--gold)}
+.arcstat.lose{color:var(--bad)}
 .logo{cursor:pointer}
 .overlay.home{background:radial-gradient(1200px 600px at 50% -5%,#123039 0%,#0a151b 60%)}
 .homecard{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px;animation:homein .4s ease both}
@@ -189,7 +206,11 @@ footer code{color:var(--muted)}
 
   <div class="sub">
     <span id="modeLabel">Günün Oyunu</span>
-    <span>Adım: <b class="num" id="stepsLabel">0</b></span>
+  </div>
+  <div class="statusbar">
+    <div class="sbcol"><span class="sblbl">TAHMİN</span><span class="sbval" id="guessNum">1 / 14</span></div>
+    <div class="pips" id="pips" aria-hidden="true"></div>
+    <div class="sbcol right" id="scoreCol"><span class="sblbl">PUAN</span><span class="sbval" id="scoreNum">5 / 5</span></div>
   </div>
 
   <div id="fatal"></div>
@@ -252,7 +273,7 @@ footer code{color:var(--muted)}
     </div>
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
     <p>Her sınır kelimenin yanında, gizli kelimeye <b>kalan mesafe</b> yüzde olarak yazar; yaklaştıkça küçülür.</p>
-    <p class="dim">• Başta üst ve alt kutular <b>boştur</b> ve rozetlerde <b>?</b> görünür. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir ve rozetinde kalan mesafe % olarak belirir; karşı taraf sen o yönde tahmin edene kadar <b>?</b> kalır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminlerin geçerli bir Türkçe kelime olmalı — binlerce kelime kabul edilir. Gizli kelime ise yaygın kelimelerden (cevap havuzu) seçilir.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 adım 5 yıldız, ≤8 adım 4 yıldız, ≤12 adım 3 yıldız, ≤16 adım 2 yıldız, sonrası 1 yıldız.<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg> <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile görebilirsin.</p>
+    <p class="dim">• Başta üst ve alt kutular <b>boştur</b> ve rozetlerde <b>?</b> görünür. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir ve rozetinde kalan mesafe % olarak belirir; karşı taraf sen o yönde tahmin edene kadar <b>?</b> kalır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminlerin geçerli bir Türkçe kelime olmalı — binlerce kelime kabul edilir. Gizli kelime ise yaygın kelimelerden (cevap havuzu) seçilir.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• <b>14 tahmin</b> hakkın var. Ne kadar erken bulursan o kadar çok <b>puan</b>: ilk 5 tahminde <b>5 puan</b>, 6–8'de 4, 9–11'de 3, 12–13'te 2, 14. tahminde 1 puan. <b>14 tahminde bulamazsan kaybedersin</b> (0 puan). Üstteki noktalar hakkını ve puan kademelerini gösterir.<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg> <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile görebilirsin.</p>
   </div>
 </div>
 
@@ -265,7 +286,7 @@ footer code{color:var(--muted)}
       <div class="stat"><b id="stStreak">0</b><i>Seri</i></div>
       <div class="stat"><b id="stBest">0</b><i>En İyi Seri</i></div>
     </div>
-    <p class="dim" style="text-align:center">Ortalama adım: <b id="stAvg">—</b> <span style="opacity:.6">(günlük oyunlar)</span></p>
+    <p class="dim" style="text-align:center">Ortalama puan: <b id="stAvg">—</b> <span style="opacity:.6">(kazanılan oyunlar)</span></p>
     <div id="winBox">
       <div id="winStars"></div>
       <div id="winMsg"></div>
@@ -303,10 +324,14 @@ function cmp(a,b){
 
 /* ---------- durum ---------- */
 var WORDS=[],WIDX=new Map(),SET=new Set(),N=0,ANSWERS=[];
-var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,input="";
+var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,input="";
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
-var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v1";
+var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v2";
 var EPOCH=new Date(2026,0,1);
+var MAX_GUESSES=14;
+/* Puan kademeleri: ilk 5 tahmin 5 puan, 6-8 → 4, 9-11 → 3, 12-13 → 2, 14 → 1 (nokta grupları 5-3-3-2-1) */
+function scoreForGuess(n){if(n<=5)return 5;if(n<=8)return 4;if(n<=11)return 3;if(n<=13)return 2;if(n<=14)return 1;return 0;}
+var PIP_GROUPS=[5,3,3,2,1];
 
 function $(s){return document.querySelector(s);}
 var els={};
@@ -314,6 +339,7 @@ var els={};
 /* ---------- SVG ikonlar (emoji yerine) ---------- */
 var SVG_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9L2.5 12z"/><path d="M15 9.5l-5 5M10 9.5l5 5"/></svg>';
 var SVG_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg>';
+var SVG_X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 var STAR_PATH='M12 2.6l2.85 5.77 6.37 .93-4.61 4.49 1.09 6.35L12 17.6l-5.7 3 1.09-6.35L2.78 9.3l6.37-.93z';
 var SVG_STAR_FILL='<svg class="wstar" viewBox="0 0 24 24" fill="currentColor"><path d="'+STAR_PATH+'"/></svg>';
 var SVG_STAR_OUTLINE='<svg class="wstar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="'+STAR_PATH+'"/></svg>';
@@ -366,21 +392,26 @@ function secretForDay(day){
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function dateOf(day){return new Date(EPOCH.getTime()+day*864e5);}
 function fmtDate(day){var d=dateOf(day);return d.getDate()+" "+MONTHS[d.getMonth()]+" "+d.getFullYear();}
-var KEY_ARC="aradle_solved_v1";
+var KEY_ARC="aradle_result_v1";
+/* sonuç kodu: 1..5 = kazanıldı (puan), -1 = kaybedildi */
 function loadArc(){try{var o=JSON.parse(localStorage.getItem(KEY_ARC));return (o&&typeof o==="object")?o:{};}catch(e){return {};}}
-function markSolved(day,st){try{var o=loadArc();var k=String(day);if(o[k]==null||st<o[k])o[k]=st;localStorage.setItem(KEY_ARC,JSON.stringify(o));}catch(e){}}
+function markResult(day,code){try{var o=loadArc();var k=String(day);var prev=o[k];
+  // kazanmayı korur (daha yüksek puan kazanır); kayıp yalnızca hiç sonuç yoksa yazılır
+  if(code>0){if(prev==null||prev<0||code>prev)o[k]=code;}
+  else{if(prev==null)o[k]=code;}
+  localStorage.setItem(KEY_ARC,JSON.stringify(o));}catch(e){}}
 
 /* ---------- kalıcılık ---------- */
 function loadStats(){
   try{var s=JSON.parse(localStorage.getItem(KEY_STATS));
-    if(s&&typeof s==="object")return {played:s.played|0,wins:s.wins|0,totalSteps:s.totalSteps|0,streak:s.streak|0,best:s.best|0,lastWinDay:(typeof s.lastWinDay==="number")?s.lastWinDay:null};
+    if(s&&typeof s==="object")return {played:s.played|0,wins:s.wins|0,totalScore:s.totalScore|0,streak:s.streak|0,best:s.best|0,lastWinDay:(typeof s.lastWinDay==="number")?s.lastWinDay:null};
   }catch(e){}
-  return {played:0,wins:0,totalSteps:0,streak:0,best:0,lastWinDay:null};
+  return {played:0,wins:0,totalScore:0,streak:0,best:0,lastWinDay:null};
 }
 function saveStats(s){try{localStorage.setItem(KEY_STATS,JSON.stringify(s));}catch(e){}}
 function saveDay(){
   if(mode!=="daily")return;
-  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,played:countedPlayed}));}catch(e){}
+  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,played:countedPlayed}));}catch(e){}
 }
 function restoreDay(){
   var s=null;
@@ -389,27 +420,26 @@ function restoreDay(){
   var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
   if(ti===undefined||bi===undefined||!(ti<bi))return;
   if(!s.done&&!(ti<secretIdx&&secretIdx<bi))return;
-  lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;countedPlayed=!!s.played;
+  lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;countedPlayed=!!s.played;
   topSet=!!s.ts;botSet=!!s.bs;
 }
 
 /* ---------- oyun akışı ---------- */
 function startDaily(){
   mode="daily";dayNo=todayNum();secretIdx=secretForDay(dayNo);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=false;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;input="";topSet=false;botSet=false;countedPlayed=false;
   restoreDay();render();
 }
 function startArchive(day){
   if(day===todayNum()){startDaily();return;}
   mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=true;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;input="";topSet=false;botSet=false;countedPlayed=true;
   closeModals();render();toastMsg("Arşiv oyunu · "+fmtDate(day));
 }
 function ensurePlayed(){
   if(mode!=="daily"||countedPlayed)return;
   countedPlayed=true;var s=loadStats();s.played++;saveStats(s);
 }
-function stars(n){return n<=5?5:n<=8?4:n<=12?3:n<=16?2:1;}
 function closeness(i){return Math.max(1,Math.round(100*(1-Math.abs(secretIdx-i)/(N-1))));}
 function fmtDist(d){return "%"+(Math.abs(d)/(N-1)*100).toFixed(1);}
 
@@ -425,19 +455,29 @@ function submitGuess(){
   steps++;ensurePlayed();
   if(cmp(w,secret)<0){lo=gi;topSet=true;flip("top");}
   else{hi=gi;botSet=true;flip("bot");}
-  input="";render();saveDay();
+  input="";
+  if(steps>=MAX_GUESSES){loseGame();return;}
+  render();saveDay();
 }
 function winGame(){
   done=true;input="";
-  markSolved(dayNo,steps);
+  var score=scoreForGuess(steps);
+  markResult(dayNo,score);
   if(mode==="daily"){
     var s=loadStats();
-    s.wins++;s.totalSteps+=steps;
+    s.wins++;s.totalScore+=score;
     s.streak=(s.lastWinDay===dayNo-1)?s.streak+1:1;
     if(s.streak>s.best)s.best=s.streak;
     s.lastWinDay=dayNo;saveStats(s);
   }
-  render();saveDay();toastMsg("Muhteşem!");
+  render();saveDay();toastMsg("Muhteşem! "+score+" puan");
+  setTimeout(function(){openStats();},1300);
+}
+function loseGame(){
+  done=true;lost=true;input="";
+  markResult(dayNo,-1);
+  if(mode==="daily"){var s=loadStats();s.streak=0;saveStats(s);}
+  render();saveDay();toastMsg("Kaybettin!");
   setTimeout(function(){openStats();},1300);
 }
 
@@ -448,7 +488,7 @@ function tileRow(el,word){
 }
 function render(){
   els.modeLabel.textContent=(mode==="daily")?("Günün Oyunu #"+(dayNo+1)):("Arşiv #"+(dayNo+1)+" · "+fmtDate(dayNo));
-  els.stepsLabel.textContent=steps;
+  renderStatus();
   tileRow(els.topTiles,topSet?WORDS[lo]:null);
   tileRow(els.botTiles,botSet?WORDS[hi]:null);
   els.topTiles.classList.toggle("empty",!topSet);
@@ -467,7 +507,7 @@ function render(){
     if(ct===0)la=IDX.get(topW[pos])+(pos===4?1:0);
     if(cb===0)lb=IDX.get(botW[pos])-(pos===4?1:0);
   }
-  var g=els.guessTiles;g.innerHTML="";g.classList.toggle("win",done);g.classList.toggle("oob",oob);
+  var g=els.guessTiles;g.innerHTML="";g.classList.toggle("win",done&&!lost);g.classList.toggle("lost",lost);g.classList.toggle("oob",oob);
   for(var i=0;i<5;i++){
     var t=document.createElement("div");t.className="tile";
     var ch=done?secret[i]:(input[i]||"");
@@ -498,6 +538,31 @@ function placeConnector(){
     var pad=9,dTop=lineTop+pad,dBot=lineBot-pad;
     if(dBot<dTop){dTop=dBot=(lineTop+lineBot)/2;}
     els.cdot.style.top=(dTop+f*(dBot-dTop))+"px";
+  }
+}
+function buildPips(){
+  els.pips.innerHTML="";
+  var idx=0;
+  for(var gi=0;gi<PIP_GROUPS.length;gi++){
+    for(var j=0;j<PIP_GROUPS[gi];j++){
+      var d=document.createElement("span");
+      d.className="pip"+((gi>0&&j===0)?" gap":"");
+      els.pips.appendChild(d);idx++;
+    }
+  }
+}
+function renderStatus(){
+  var g=done?steps:Math.min(steps+1,MAX_GUESSES);
+  els.guessNum.textContent=g+" / "+MAX_GUESSES;
+  var sc=lost?0:(done?scoreForGuess(steps):scoreForGuess(steps+1));
+  els.scoreNum.textContent=sc+" / 5";
+  els.scoreCol.classList.toggle("lose",lost);
+  var pips=els.pips.children;
+  for(var i=0;i<pips.length;i++){
+    var p=pips[i];p.classList.remove("used","cur","win","lost");
+    if(lost){p.classList.add("lost");}
+    else if(done){ if(i<steps-1)p.classList.add("used"); else if(i===steps-1)p.classList.add("win"); }
+    else{ if(i<steps)p.classList.add("used"); else if(i===steps)p.classList.add("cur"); }
   }
 }
 function shake(){
@@ -577,7 +642,8 @@ function arcRow(day,today,solved){
   var dt=document.createElement("span");dt.textContent=fmtDate(day);
   info.appendChild(num);info.appendChild(dt);
   var stat=document.createElement("div");
-  if(solved!=null){stat.className="arcstat ok";stat.innerHTML=SVG_CHECK+" "+solved+" adım";}
+  if(solved>0){stat.className="arcstat ok";stat.innerHTML=SVG_CHECK+" "+solved+" puan";}
+  else if(solved===-1){stat.className="arcstat lose";stat.innerHTML=SVG_X+" Kayıp";}
   else{stat.className="arcstat";stat.textContent="Oyna ›";}
   row.appendChild(info);row.appendChild(stat);
   row.addEventListener("click",function(){startArchive(day);});
@@ -591,21 +657,28 @@ function openStats(){
   $("#stWin").textContent=s.played?Math.round(s.wins/s.played*100):0;
   $("#stStreak").textContent=s.streak;
   $("#stBest").textContent=s.best;
-  $("#stAvg").textContent=s.wins?(s.totalSteps/s.wins).toFixed(1):"—";
+  $("#stAvg").textContent=s.wins?(s.totalScore/s.wins).toFixed(1):"—";
   var wb=$("#winBox");
   if(done){
     wb.classList.add("on");
-    var st=stars(steps);
-    $("#winStars").innerHTML=SVG_STAR_FILL.repeat(st)+SVG_STAR_OUTLINE.repeat(5-st);
-    $("#winMsg").textContent="Gizli kelimeyi "+steps+" adımda buldun!";
+    wb.classList.toggle("lostbox",lost);
+    if(lost){
+      $("#winStars").innerHTML=SVG_STAR_OUTLINE.repeat(5);
+      $("#winMsg").innerHTML="14 tahminde bulamadın. Gizli kelime:";
+    }else{
+      var score=scoreForGuess(steps);
+      $("#winStars").innerHTML=SVG_STAR_FILL.repeat(score)+SVG_STAR_OUTLINE.repeat(5-score);
+      $("#winMsg").innerHTML="Gizli kelimeyi <b>"+steps+".</b> tahminde buldun · <b>"+score+" puan</b>";
+    }
     $("#winWord").textContent=up(secret);
   }else wb.classList.remove("on");
   $("#statsModal").classList.add("open");
 }
 function shareResult(){
-  var st=stars(steps);
   var head=(mode==="daily")?("Aradle #"+(dayNo+1)):("Aradle Arşiv #"+(dayNo+1));
-  var txt=head+" — "+st+"/5 yıldız\nGizli kelimeyi "+steps+" adımda buldum.";
+  var txt;
+  if(lost){txt=head+" — Kaybettim (0 puan)\n14 tahminde bulamadım.";}
+  else{var score=scoreForGuess(steps);txt=head+" — "+score+"/5 puan\nGizli kelimeyi "+steps+". tahminde buldum.";}
   function fallback(){
     var ta=document.createElement("textarea");ta.value=txt;
     document.body.appendChild(ta);ta.select();
@@ -650,9 +723,9 @@ function bindUI(){
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
+  ["modeLabel","guessNum","scoreNum","scoreCol","pips","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
   window.addEventListener("resize",function(){if(ready)placeConnector();});
-  buildAlpha();buildKeyboard();bindUI();
+  buildAlpha();buildPips();buildKeyboard();bindUI();
   loadWords().then(function(texts){
     var ansSet=parseSet(texts[0]),accSet=parseSet(texts[1]||"");
     if(ansSet.size<10)throw new Error("az");
@@ -670,7 +743,7 @@ document.addEventListener("DOMContentLoaded",function(){
   });
   if(new URLSearchParams(location.search).has("debug")){
     window.__aradle={
-      state:function(){return {N:N,answers:ANSWERS.length,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,mode:mode,today:todayNum(),words:WORDS,inAnswers:ANSWERS.indexOf(secret)>=0};},
+      state:function(){return {N:N,answers:ANSWERS.length,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,lost:lost,score:(done&&!lost)?scoreForGuess(steps):(lost?0:scoreForGuess(steps+1)),mode:mode,today:todayNum(),words:WORDS,inAnswers:ANSWERS.indexOf(secret)>=0};},
       guess:function(w){input=low(w);submitGuess();},
       archive:function(day){startArchive(day);},
       daily:startDaily,
