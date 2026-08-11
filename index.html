@@ -57,11 +57,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px;pad
 .hgroup{display:flex;gap:6px}
 .iconbtn{width:clamp(32px,9vw,38px);height:clamp(32px,9vw,38px);flex:none;border-radius:9px;background:var(--panel);border:1px solid var(--line);color:var(--accent);display:grid;place-items:center;transition:background .15s}
 .iconbtn:hover{background:var(--key)}
-.logo{display:flex;gap:clamp(2px,.7vw,3px);align-items:center;user-select:none}
-.logo .lt{width:clamp(18px,5.2vw,23px);height:clamp(18px,5.2vw,23px);border-radius:5px;background:var(--panel);border:1px solid var(--line);color:var(--text);font-weight:900;font-size:clamp(10px,3vw,13px);display:grid;place-items:center}
-.logo .lt.g{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--accent-ink);border:none}
-.logo .ar{display:flex;flex-direction:column;line-height:.9;font-size:10px;color:var(--accent);margin:0 3px}
-@media(max-width:400px){.logo .ar{display:none}}
+.brand{width:clamp(30px,8.8vw,38px);height:clamp(30px,8.8vw,38px);flex:none;background-color:var(--text);-webkit-mask:url("data:image/png;base64,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") center/contain no-repeat;mask:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAABACAYAAABGHBTIAAAOr0lEQVR4nNWbe5RXVRXHP795McPA8AZFEFBABElF0fC5QPEVKQblKk1Tl4/QNJemoaWuyjIfpJXRGx/Zw0yzRCOzMLMkxBFJMB0FswF5CowMAzPzm/747t3dc+c3zB1Qlp617vr95t5zzzn79d3fs89v4L1vOaAk/H0e8DzwD+CMcL/E+n6gWxT0COAx4GHgAGA88Hvgt8ChqXc+cIIXh++DgbuBZ4FpBfp+0p79GBjUzhjv21ZkF0AZcD1QDVwd7heHfn6vBJiJXP0GoLzAeO+rlo7TM4F/Aj8E9gj3C1kt3tsD+L69e26qz/vGzaOgHwb+gGJ1fDt9soxzMIrvvwCTOjnOe9aiZQYBc5BlPhHulyKXzJHNNdOecjqwAPglsM+uLHZXWoyrLsA1wHMoTt3tdhVpi0gUmgOuRMq8/F0YO3PL0dqqZwFPASuBJcCxQGV4Xg6cClwHXIJSUWcWmgv9ewH3Ai3AWLJ7zE61tJsdCTwO/A44CClhJvAG8KA9rwBmIcvPAeYDS5GL+phZWj/gMuAl4E/Av4HR9qysE+NkbtGiQ4B7gGeAjxXo68+XAU/YZ9/w/FJgcfg7vVi3ms95HBJyO7AZ+DvQBNxK63z9rri4Aw3IWl9BOfKqcN/zqU/q7SDg4rCoQYhl/QCYF8b3Fl033puJXPhphPjjgFOAOxBR+RGwb3hnp4hKOk7PAxYC30XutaPB0++CUPpx4HXgPqA/iSXTgg4CPg8cFt49EBGRh2itpB4ILKuBr5MoPHPaSsfpJJQDPU69ZRmwyPo5WfgGsAr4MrJI2poVwGeQuy9AsT4sPN8LWA2MtDFLw7M+yHMWoRDw+Xfo4tEq+wI/R/FyWri/s3Hi74wnAZ0rgJ72bDJC+iUk+fub9vfdwAP2zpX2zK2cNtDxwL9QfBeSq02rBG5GLnJF6qXOwL/n6KicOPGnkID3IxRfhPJ3aXgfxLQuRJYfbvcKKTwKXgH8CsV8f7tX0CM/gpD327RG1c6AQCE3itYoC/c/DtQB7wCPIK8qC/0LKbgjpce1XgG8hmgutA4BALailOFtV2B+NDARGBjGis8eRBx5f6A3MBsB2h3AqNDfcaCE7B4WrT0RWAGcXWAdbEJIdxZyn2iZjgR3yw4HHgV+jdLFQuB869MXue/fbI50OxwVBZ5AFZBK2kfyLM2tPRR4EbgxdZ86BA53Iq46CdgzDLCjCX1R6XLNUIS6t6Nw+Spt97jRIpUoRzejgkG6ZRW61ObpZmNXIpyYbc+Li1By34qQ82Bgii1+EnK7lg4mzdn7Y9COphy502QTdhpKSQ1Iy3m7cibgcYh6vmDvvGWLPRrxbzKswQUtA7qiPD0EeddEhOIXAs05RNsesUV4nmu2iZch5F4GbAmT+gLcWr0QWJyJwG9W6EMQNN4rQVRxHvAkcEt4NhV5x0bk6nOAV+z99PyeSbqhvFwe7pUC60wB9wJHOECV2eQg7ppDCb8PMABVIpYC/wn93DuaTBnvmJJeCAK1mKDNtG1u5VuB79iCF6NwmolS2DqUlx9EBOM+hDmuRFA66gdU2Xiu2Cag0YStsfWflTMtOklvCVczSaxtNA2/gqy9Mgg+A5VjnkScu57WVthR836jEY0diMJjDgI5bx8FrjVhb0csMIeM0dfW2URbRHePWIc2PCf4hA8DG0xbHmPxJaeJm4A3gbnWZxawFiFhjfUvSr3fUWuvf1y8e8OdaN99MrJcBYW9BxJlOsaMBG4qQhTuWAQQdfYwWii6SW+U0MeiAt1ilGpqSOKmM8K6MJF/+6cr3hXeguplXRHXLg+KiMjvwBY9rAyFXdci5I6nIAtPBfZG8egg5lcOuX0zipcWpOXTEGnwRbqSOit0k43tn3Hh3ZG774sM0mz3XTnbUCh5K8T6GoG8o9wCE/oSxEOn2mdDgQGabYJGRDhORMX0KSj/OpjtDGmIc7UgK+5n4zai8Cmx+YuRcjYh0Bpu95tom8bc7YtKSMAJ4DdoS/g5VFoZgzbb26yPv1hmg1ah/N0X5b2h1n8Z8HaYNAuAeXMX7ocQuxE4BPgayhyPmZB5m+8qtB/ogQjUTJQmY2y7tzanLVAcOvYDvoSIw5M2cbEJu8au8xFwvIEQvBSlrqVoi/cqhfN3usVn/RD6dkGYMgIxtdtsrKeQe58BXGR9YzsKhWeM8S0o7K5vb8vl7oIJm7fFe1WyAlhuC1prE7+J4L/SlLYakZaFaIOwvYBw8Xslqnr0JMGC1Sbo0+jsqQ8wHZWQ9gNq7f2+JEW98xFz64c8M4e87WTg1EL7RU/antibaY2eoNjem8RVHkVxPN+elyB3G2CfzyEi7wuMc5VZv94obDw+i0zAIYhw9AK+ZQKDlL3d+q5BRuiLAC4it3vtKKB6RyUbZ0mRvhGU0Qe58CoSgKmwPnmS9DYGueBoxMKqkcsVIwbXn8SjHOzcwtvs+yDkqiOB9Tb3lrA2SMBrswkY02NXtE+YlfX4I7IvTxmbbLFHomKbL47w6e/0BiYgrj3FFjoc7Yw8x0alOtKvBH4BfA+58DnII2qtXyWJYRy9l5IwL1faPshD5mfdXPugbnHfXb2OLHs0ipPttE1lbrEGhKSjESCV0zqntpAQ/jqUV69GoXIpAqkeSNHz0bZvPbJeMVJqNSrad0cg64aZgsrMm7JUId3C0UVcy3sioKpGDKwPitVNtnBPe+5ivjGJ1oxh02ALPRlZczECoTXII7qQ5Nq3bd4+yIIDUSGjh83baFcFcBJWJOzM8WMkBE75VthnP3s+DIFUDaoibiBBT1eYU8BSWrviBsSkLrdFX43Abhhy57qwXgc+Z4RHAjcBf0UeVG/j16I8vQxZuDiLwC0FLhe4FO2k/NzI3XIEApoXbLJ8ENzHAFl1swl4LnAB8DIq6w5FyNqILB9/NeAUdCyy7EzgJyZsQ1DiSMT1j/a5s7p0evMeEbyLTRJzagtypQnIOosRIXElFaH4K0E0dgZKc6B83hMhuCOxg5hjxH6m1HmolLvK/vaqSot9vwulMt/cNGd1aRek2Qby+PRdzlrkct1pW5Xojcos/0WesBxZ9UREX4+yfttMeQSleJw72m82xaxDMb4AWXiEve99NwJfRAzwFpLqSuYY9g1DV+RmtQg0PA63oBg5AIGICx2VNQhx4XJUVLvY7ntsd0Huu4pkdxaBzS18Dir7VJG4fCRKdaaEaTan184gDNhRc0Y12QaYiGrLW00Rnl4WoaORHEkejLumHHBMENY3LkWIRr5BshPztOIsr8wEfhah8gAETnGT4FvWxQjBp5PgSqcE3oJcsxjtpm5EblSBXNxjsxhZcJ4tPsa9pyf/7mQjj2phK4NwTSQKa0BoXIy8YCAJrsQThzhXFaqFXUdSW8sssFu0xCYejzT7AAKPd2zARuTOObRhcEYW478WxWGsldUgACsLFybMesSPD7c53fLOj5tojfzu9n0ROVkBfJYk/WUSOI9c9UBE5B2du5JUJGNlshBR8e+bETurQec/y2mL8EXISzYiBL8Fsa0vmNAl9qyHXS40tFbunuiA8DKSWl0ui8BltrhrURHtLcShj0d7024k7rzCBh9KQgrqSVxyMOK/9Sao15Aj2c/Z87Eo5ZyKtp+H2dj1iIndj5B4Ha2JjQs+AO3Jl5qy8tjJQ0etEe00jiWhjO5anlI2IHTsQXIS2BT6FSEceNWUNdTGyYUrT4K4deiU8S7k1ichbzgE+Ckq9g+2+6Osj4+RI6GWe6Cy7oUIg/JZQWu9LXoY0nJP9JODemSFScjlx6CacS1JscCRtsLGqEbcuD9JHDpAxWOYrjZPN5QRDkMp6fCgnGL0Mwn3IMcGz9sViOI+hao3+axMy/v5woYiJJyNtl3nIGJRbf2rkLv6sU2ZfXa37zUIWNytq0ypjsRV6JcI16A621yUjl5BfNlPGPOonjXBxqwMa8TG74WqJg8Bt2W1cIkt3mO1wRY13Qa8zoTtYpP67ie6rNO9zYjjeg4fgEJhhI1Vj5B2AvKERuQxz6As4DHvqFyMgGkbra3rZKUnorV/BG7OunlInwK02ATbbaFrSFw4pgj/213VF1JEQvJbEBCuNUUchX40vhIRFMcFV5jXyQnjHQ98CLmvFwVcMW+i7DIKqMyah33hTbSOsxxW4A5/e4vxuT2MUYFAaQDJZn+IKWEhIiw3IWQuR17jhfoqlCJvI6lneTq8yMaKRYQmdKr5gI19XGcqHtGNIlVMH3HE4ncs9fizbshStWhT7/WpCgR8L6GDtINs4X5I5gfc9SjNjEdnYr7ROMHurUIed5I93x+ltquATVmJh5ODeIbjLZJ8b+4JcYwi5JqNKK5q0W7ndbQR8UJeb7ucqaXr2e7SL6ITwSnI6iUm1Ah0FnyBKWYqysUlZCQelYi/OrXzVmhD7vEdD8JakFUjiDWinVN3BF7bw7gxzuP20EPKvc0Fn4vKSzOQx9wD/BlZ+zGSdNUEtHQkcA5V/Xuj7Zafwnluje7bSOtNgZ9SeOFtK8nmvNn+rrTn+TBm9CAPH999xZTjIOieMRuFxHj067//H68QvG1HAnunuYhpPYTcZ7INtIXEmp6rnVFtQxZsQnx2PAmIxG2jL9oFTAsb00sh9ya8X4xCw8PDn7VqHVnYrfU2iodjEKicjkBlM7Ke72EbUAydjQjCoajetMIWPpgknfn4UYB86l7ciDhwRWyI64wx394heabdkg9Ugjb3ZyCwyAOfRvmtDpGGaYiFzUDIuISkKjIFkYdxiOO6paMb51OXp5hSxNfzNk97La3AXW7xaAN0krAEEfvliAoW+p+jiOrTEUHI2zvPoerm8wixna6OQ6G0P6pwXIKo5Q1h/N3WYqyVIhfv6HeaUQFdUN15NSL+i9AveGvQscpAFA4DUT6djxEHez8qcLe2tGBZfqcZ39kLWXQL2jwsI/m91jHoXOk1lF/bm3O3t3SKyvpO5PHjEH9uAH6GzpJeRvve/uGd3erG70VLCz4NCTof5VRvnTkS2mH7H/9FPyQVjqTLAAAAAElFTkSuQmCC") center/contain no-repeat}
 .sub{display:flex;justify-content:center;align-items:center;padding:8px 2px 0;color:var(--muted);font-size:13px;letter-spacing:.4px}
 .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px 2px}
 .sbcol{display:flex;flex-direction:column;gap:2px;min-width:46px}
@@ -182,6 +178,16 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6p
 .arcstat{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:800;color:var(--accent);white-space:nowrap}
 .arcstat.ok{color:var(--accent)}
 .arcstat.lose{color:var(--bad)}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 4px;border-bottom:1px solid var(--line)}
+.setrow:last-child{border-bottom:none}
+.setlbl{font-size:15px;font-weight:700;color:var(--text)}
+.setsub{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:2px}
+.toggle{width:50px;height:29px;flex:none;border-radius:999px;background:var(--key-hi);border:1px solid var(--line);position:relative;transition:background .18s;cursor:pointer}
+.toggle .knob{position:absolute;top:2px;left:2px;width:23px;height:23px;border-radius:50%;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .18s}
+.toggle[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
+.toggle[aria-checked="true"] .knob{transform:translateX(21px);background:var(--accent-ink)}
+.dontshow{display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--text);cursor:pointer;user-select:none}
+.dontshow input{width:19px;height:19px;flex:none;accent-color:var(--accent);cursor:pointer}
 footer{text-align:center;font-size:11.5px;color:var(--dim);padding:4px 0 8px}
 footer code{color:var(--muted)}
 #fatal{display:none;text-align:center;padding:40px 18px;color:var(--muted);font-size:14px;line-height:1.6}
@@ -198,18 +204,12 @@ footer code{color:var(--muted)}
 <script>try{var _t=localStorage.getItem("aradle_theme");if(_t==="dark"||_t==="light")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <div id="app">
   <header>
-    <div class="hgroup">
-      <button class="iconbtn" id="btnHelp" aria-label="Nasıl oynanır" title="Nasıl oynanır"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.4 9.4a2.7 2.7 0 0 1 5.2 .85c0 1.75-2.6 2.05-2.6 3.75"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg></button>
-      <button class="iconbtn" id="btnTheme" aria-label="Tema değiştir" title="Aydınlık / Karanlık"></button>
-    </div>
-    <div class="logo" aria-label="Arala">
-      <span class="ar">▲▼</span>
-      <span class="lt">A</span><span class="lt">R</span><span class="lt g">A</span><span class="lt">L</span><span class="lt">A</span>
-      <span class="ar">▲▼</span>
-    </div>
+    <div class="brand" id="brand" role="img" aria-label="Arala"></div>
     <div class="hgroup">
       <button class="iconbtn" id="btnFree" aria-label="Arşiv" title="Arşiv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></button>
       <button class="iconbtn" id="btnStats" aria-label="İstatistikler" title="İstatistikler"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="10.5" width="4.7" height="9.5" rx="1.1"/><rect x="9.65" y="4" width="4.7" height="16" rx="1.1"/><rect x="16.3" y="13.5" width="4.7" height="6.5" rx="1.1"/></svg></button>
+      <button class="iconbtn" id="btnHelp" aria-label="Nasıl oynanır" title="Nasıl oynanır"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.4 9.4a2.7 2.7 0 0 1 5.2 .85c0 1.75-2.6 2.05-2.6 3.75"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg></button>
+      <button class="iconbtn" id="btnSettings" aria-label="Ayarlar" title="Ayarlar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
   </header>
 
@@ -265,6 +265,7 @@ footer code{color:var(--muted)}
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
     <p>Her sınır kelimenin yanında, gizli kelimeye <b>kalan mesafe</b> yüzde olarak yazar; yaklaştıkça küçülür.</p>
     <p class="dim">• Başta üst ve alt kutular <b>boştur</b> ve rozetlerde <b>?</b> görünür. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir ve rozetinde kalan mesafe % olarak belirir; karşı taraf sen o yönde tahmin edene kadar <b>?</b> kalır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminlerin geçerli bir Türkçe kelime olmalı — binlerce kelime kabul edilir. Gizli kelime ise yaygın kelimelerden (cevap havuzu) seçilir.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• <b>14 tahmin</b> hakkın var. Ne kadar erken bulursan o kadar çok <b>puan</b>: ilk 5 tahminde <b>5 puan</b>, 6–8'de 4, 9–11'de 3, 12–13'te 2, 14. tahminde 1 puan. <b>14 tahminde bulamazsan kaybedersin</b> (0 puan). Üstteki noktalar hakkını ve puan kademelerini gösterir.<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg> <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile görebilirsin.</p>
+    <label class="dontshow"><input type="checkbox" id="helpDont"> Bir daha gösterme</label>
   </div>
 </div>
 
@@ -295,6 +296,20 @@ footer code{color:var(--muted)}
     <div class="mhead"><h2>Arşiv</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <p class="dim">Son 3 ayın günlük bulmacaları. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile işaretlenir.</p>
     <div class="arclist" id="arclist"></div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsModal" role="dialog" aria-modal="true" aria-label="Ayarlar">
+  <div class="modal">
+    <div class="mhead"><h2>Ayarlar</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="setrow">
+      <span class="setlbl">Karanlık mod<span class="setsub">Koyu (siyah) tema</span></span>
+      <button class="toggle" id="tgTheme" role="switch" aria-checked="false" aria-label="Karanlık mod"><span class="knob"></span></button>
+    </div>
+    <div class="setrow">
+      <span class="setlbl">Ekran klavyesi<span class="setsub">Alttaki dokunmatik klavye</span></span>
+      <button class="toggle" id="tgKb" role="switch" aria-checked="true" aria-label="Ekran klavyesi"><span class="knob"></span></button>
+    </div>
   </div>
 </div>
 
@@ -334,8 +349,6 @@ var SVG_X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 var STAR_PATH='M12 2.6l2.85 5.77 6.37 .93-4.61 4.49 1.09 6.35L12 17.6l-5.7 3 1.09-6.35L2.78 9.3l6.37-.93z';
 var SVG_STAR_FILL='<svg class="wstar" viewBox="0 0 24 24" fill="currentColor"><path d="'+STAR_PATH+'"/></svg>';
 var SVG_STAR_OUTLINE='<svg class="wstar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="'+STAR_PATH+'"/></svg>';
-var SVG_MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 7 7 0 1 0 20 14.5z"/></svg>';
-var SVG_SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg>';
 /* ---------- tema (aydınlık/karanlık) ---------- */
 var KEY_THEME="aradle_theme";
 function effectiveTheme(){
@@ -343,11 +356,11 @@ function effectiveTheme(){
   if(t==="dark"||t==="light")return t;
   return (window.matchMedia&&window.matchMedia("(prefers-color-scheme:dark)").matches)?"dark":"light";
 }
-function updateThemeIcon(){if(els.btnTheme)els.btnTheme.innerHTML=(effectiveTheme()==="dark")?SVG_SUN:SVG_MOON;}
+function syncThemeToggle(){var t=$("#tgTheme");if(t)t.setAttribute("aria-checked",(effectiveTheme()==="dark")?"true":"false");}
 function applyTheme(t){
   if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);
   else document.documentElement.removeAttribute("data-theme");
-  updateThemeIcon();
+  syncThemeToggle();
 }
 function toggleTheme(){
   var next=(effectiveTheme()==="dark")?"light":"dark";
@@ -359,10 +372,18 @@ function initTheme(){
   applyTheme((t==="dark"||t==="light")?t:null);
   if(window.matchMedia){
     var mq=window.matchMedia("(prefers-color-scheme:dark)");
-    var onch=function(){var s=null;try{s=localStorage.getItem(KEY_THEME);}catch(e){}if(s!=="dark"&&s!=="light")updateThemeIcon();};
+    var onch=function(){var s=null;try{s=localStorage.getItem(KEY_THEME);}catch(e){}if(s!=="dark"&&s!=="light")syncThemeToggle();};
     if(mq.addEventListener)mq.addEventListener("change",onch);else if(mq.addListener)mq.addListener(onch);
   }
 }
+/* ---------- ekran klavyesi ---------- */
+var KEY_KB="aradle_kb";
+function kbEnabled(){var v=null;try{v=localStorage.getItem(KEY_KB);}catch(e){}return v!=="0";}
+function applyKb(){var on=kbEnabled();if(els.kb)els.kb.style.display=on?"":"none";var t=$("#tgKb");if(t)t.setAttribute("aria-checked",on?"true":"false");}
+function setKb(on){try{localStorage.setItem(KEY_KB,on?"1":"0");}catch(e){}applyKb();}
+/* ---------- nasıl oynanır: bir daha gösterme ---------- */
+var KEY_HELP="aradle_help_hide";
+function helpHidden(){var v=null;try{v=localStorage.getItem(KEY_HELP);}catch(e){}return v==="1";}
 
 /* ---------- kelime havuzu ---------- */
 function loadWords(){
@@ -641,8 +662,9 @@ function handleKey(k){
 }
 
 /* ---------- modallar ---------- */
-function modalOpen(){return $("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open")||$("#archiveModal").classList.contains("open");}
-function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");$("#archiveModal").classList.remove("open");}
+function modalOpen(){return $("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open")||$("#archiveModal").classList.contains("open")||$("#settingsModal").classList.contains("open");}
+function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");$("#archiveModal").classList.remove("open");$("#settingsModal").classList.remove("open");}
+function openSettings(){closeModals();syncThemeToggle();applyKb();$("#settingsModal").classList.add("open");}
 function openArchive(){
   closeModals();
   var t=todayNum(),arc=loadArc(),host=$("#arclist");host.innerHTML="";
@@ -667,7 +689,7 @@ function arcRow(day,today,solved){
   row.addEventListener("click",function(){startArchive(day);});
   return row;
 }
-function openHelp(){closeModals();$("#helpModal").classList.add("open");}
+function openHelp(){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();$("#helpModal").classList.add("open");}
 function openStats(){
   closeModals();
   var s=loadStats();
@@ -731,14 +753,17 @@ function bindUI(){
   $("#btnFree").addEventListener("click",openArchive);
   $("#btnFree2").addEventListener("click",openArchive);
   $("#btnShare").addEventListener("click",shareResult);
-  els.btnTheme.addEventListener("click",toggleTheme);
+  $("#btnSettings").addEventListener("click",openSettings);
+  $("#tgTheme").addEventListener("click",toggleTheme);
+  $("#tgKb").addEventListener("click",function(){setKb(!kbEnabled());});
+  $("#helpDont").addEventListener("change",function(){try{localStorage.setItem(KEY_HELP,this.checked?"1":"0");}catch(e){}});
   document.querySelectorAll(".overlay").forEach(function(ov){
     ov.addEventListener("click",function(e){if(e.target===ov||e.target.closest("[data-close]"))closeModals();});
   });
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-  ["modeLabel","guessNum","scoreNum","scoreCol","pips","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","alpha","btnTheme"].forEach(function(id){els[id]=document.getElementById(id);});
+  ["modeLabel","guessNum","scoreNum","scoreCol","pips","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
   initTheme();
   window.addEventListener("resize",function(){if(ready)placeConnector();});
   buildAlpha();buildPips();buildKeyboard();bindUI();
@@ -752,7 +777,8 @@ document.addEventListener("DOMContentLoaded",function(){
     ANSWERS=Array.from(ansSet).sort(cmp);
     ready=true;
     startDaily();
-    openHelp();
+    applyKb();
+    if(!helpHidden())openHelp();
   }).catch(function(err){
     showFatal("<b>Kelime havuzu yüklenemedi.</b><br><br><code>kelimehavuzu.txt</code> dosyasının <code>index.html</code> ile aynı klasörde olduğundan emin olun ve siteyi bir web sunucusu üzerinden açın (ör. GitHub Pages veya <code>python3 -m http.server</code>).<br><br><span style='opacity:.6'>"+String(err&&err.message||err)+"</span>");
   });
