@@ -191,8 +191,9 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6p
 .setsub{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:2px}
 .toggle{width:50px;height:29px;flex:none;border-radius:999px;background:var(--key-hi);border:1px solid var(--line);position:relative;transition:background .18s;cursor:pointer}
 .toggle .knob{position:absolute;top:2px;left:2px;width:23px;height:23px;border-radius:50%;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .18s}
-.toggle[aria-checked="true"]{background:var(--accent);border-color:var(--accent)}
-.toggle[aria-checked="true"] .knob{transform:translateX(21px);background:var(--accent-ink)}
+.toggle[aria-checked="true"]{background:var(--ok);border-color:var(--ok)}
+.toggle[aria-checked="true"] .knob{transform:translateX(21px);background:#fff}
+.setsel{appearance:none;-webkit-appearance:none;flex:none;background-color:var(--panel);background-image:url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%238b93a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1.5l5 5 5-5'/></svg>");background-repeat:no-repeat;background-position:right 12px center;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 34px 9px 14px;font-size:14px;font-weight:700;cursor:pointer}
 .dontshow{display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--text);cursor:pointer;user-select:none}
 .dontshow input{width:19px;height:19px;flex:none;accent-color:var(--accent);cursor:pointer}
 .btnwide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
@@ -314,11 +315,11 @@ footer code{color:var(--muted)}
   <div class="modal">
     <div class="mhead"><h2 lang="tr">Ayarlar</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="setrow">
-      <span class="setlbl">Karanlık mod<span class="setsub">Koyu (siyah) tema</span></span>
-      <button class="toggle" id="tgTheme" role="switch" aria-checked="false" aria-label="Karanlık mod"><span class="knob"></span></button>
+      <span class="setlbl">Tema<span class="setsub">Koyu veya açık.</span></span>
+      <select class="setsel" id="selTheme" aria-label="Tema"><option value="light">Açık</option><option value="dark">Koyu</option></select>
     </div>
     <div class="setrow">
-      <span class="setlbl">Ekran klavyesi</span>
+      <span class="setlbl">Ekran klavyesi<span class="setsub">Fiziksel klavye kullanıyorsanız kapatabilirsiniz.</span></span>
       <button class="toggle" id="tgKb" role="switch" aria-checked="true" aria-label="Ekran klavyesi"><span class="knob"></span></button>
     </div>
   </div>
@@ -367,16 +368,15 @@ function effectiveTheme(){
   if(t==="dark"||t==="light")return t;
   return (window.matchMedia&&window.matchMedia("(prefers-color-scheme:dark)").matches)?"dark":"light";
 }
-function syncThemeToggle(){var t=$("#tgTheme");if(t)t.setAttribute("aria-checked",(effectiveTheme()==="dark")?"true":"false");}
+function syncThemeToggle(){var s=$("#selTheme");if(s)s.value=effectiveTheme();}
 function applyTheme(t){
   if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);
   else document.documentElement.removeAttribute("data-theme");
   syncThemeToggle();
 }
-function toggleTheme(){
-  var next=(effectiveTheme()==="dark")?"light":"dark";
-  try{localStorage.setItem(KEY_THEME,next);}catch(e){}
-  applyTheme(next);
+function setTheme(t){
+  try{localStorage.setItem(KEY_THEME,t);}catch(e){}
+  applyTheme(t);
 }
 function initTheme(){
   var t=null;try{t=localStorage.getItem(KEY_THEME);}catch(e){}
@@ -765,7 +765,7 @@ function bindUI(){
   
   $("#btnShare").addEventListener("click",shareResult);
   $("#btnSettings").addEventListener("click",openSettings);
-  $("#tgTheme").addEventListener("click",toggleTheme);
+  $("#selTheme").addEventListener("change",function(){setTheme(this.value);});
   $("#tgKb").addEventListener("click",function(){setKb(!kbEnabled());});
   $("#helpDont").addEventListener("change",function(){try{localStorage.setItem(KEY_HELP,this.checked?"1":"0");}catch(e){}});
   document.querySelectorAll(".overlay").forEach(function(ov){
