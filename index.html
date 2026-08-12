@@ -12,7 +12,7 @@
   /* AYDINLIK (beyaz) tema — varsayılan */
   --bg:#ffffff; --bg2:#ffffff; --panel:#eef1f6; --line:#d7dde6;
   --text:#12151b; --muted:#5b6472; --dim:#98a1af;
-  --tile:#bcdcff; --tile2:#a6cdfb; --tile-ink:#0d3b6f;   /* tahmin karoları: açık mavi (TEK renkli öğe) */
+  --tile:#bcdcff; --tile2:#a6cdfb; --tile-ink:#0d3b6f; --ok:#2e9e5b; --ok-ink:#ffffff;   /* tahmin karoları: açık mavi (TEK renkli öğe) */
   --accent:#12151b; --accent2:#2a2f38; --accent-ink:#ffffff;   /* vurgu: siyah/beyaz */
   --bad:#12151b; --bad-bg:#eef1f6; --bad-ink:#12151b;
   --key:#e7ebf1; --key-hi:#d5dce6;
@@ -22,7 +22,7 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0b0c0f; --bg2:#131519; --panel:#191c22; --line:#2a2f39;
   --text:#f2f4f8; --muted:#98a1af; --dim:#5b6472;
-  --tile:#143a75; --tile2:#0f2f61; --tile-ink:#dbeafe;   /* tahmin karoları: koyu mavi (TEK renkli öğe) */
+  --tile:#143a75; --tile2:#0f2f61; --tile-ink:#dbeafe; --ok:#35a866; --ok-ink:#ffffff;   /* tahmin karoları: koyu mavi (TEK renkli öğe) */
   --accent:#f2f4f8; --accent2:#d4d9e0; --accent-ink:#0b0c0f;   /* vurgu: beyaz/siyah */
   --bad:#f2f4f8; --bad-bg:#191c22; --bad-ink:#f2f4f8;
   --key:#20242c; --key-hi:#2b313b;
@@ -32,7 +32,7 @@
 :root[data-theme="dark"]{
   --bg:#0b0c0f; --bg2:#131519; --panel:#191c22; --line:#2a2f39;
   --text:#f2f4f8; --muted:#98a1af; --dim:#5b6472;
-  --tile:#143a75; --tile2:#0f2f61; --tile-ink:#dbeafe;
+  --tile:#143a75; --tile2:#0f2f61; --tile-ink:#dbeafe; --ok:#35a866; --ok-ink:#ffffff;
   --accent:#f2f4f8; --accent2:#d4d9e0; --accent-ink:#0b0c0f;
   --bad:#f2f4f8; --bad-bg:#191c22; --bad-ink:#f2f4f8;
   --key:#20242c; --key-hi:#2b313b;
@@ -97,7 +97,7 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6p
 .alpha span.in{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
 .alpha span.hit{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
 .tiles{display:flex;gap:7px;justify-content:center}
-.tile{width:clamp(40px,11.6vw,52px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(19px,5.6vw,25px);font-weight:800;border-radius:4px}
+.tile{width:clamp(40px,11.6vw,52px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(19px,5.6vw,25px);font-weight:800;border-radius:2px}
 .bound .tile{background:var(--tile);color:var(--tile-ink)}
 .tiles.empty .tile{background:var(--panel);border:2px dashed var(--line);box-shadow:none;color:transparent}
 .guess .tile{background:var(--panel);border:2px dashed var(--line);color:var(--text);position:relative;transition:border-color .15s}
@@ -105,7 +105,7 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6p
 .guess .tile.next{border-color:var(--accent)}
 .guess.oob .tile.filled{border-color:var(--bad)}
 .guess .tile:not(.filled)::before{content:"•";color:var(--dim);font-size:.8em}
-.guess.win .tile{background:var(--accent);border:none;color:var(--accent-ink);animation:pop .5s both}
+.guess.win .tile{background:var(--ok);border:none;color:var(--ok-ink);animation:pop .5s both}
 .guess.lost .tile{background:var(--bad-bg);border:2px solid var(--bad);color:var(--bad-ink);box-shadow:none;animation:pop .4s both}
 .guess.lost .tile::before{content:none}
 .guess.win .tile::before{content:none}
@@ -167,7 +167,7 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6p
 .ii{width:1em;height:1em;vertical-align:-0.13em}
 .wstar{width:30px;height:30px}
 #winMsg{font-size:15px;color:var(--text)}
-#winWord{font-size:22px;font-weight:900;letter-spacing:6px;color:var(--accent);margin:8px 0 2px}
+#winWord{font-size:22px;font-weight:900;letter-spacing:6px;color:var(--ok);margin:8px 0 2px}
 #winBox.lostbox{border-color:var(--line)}
 #winBox.lostbox #winStars{color:var(--dim)}
 #winBox.lostbox #winWord{color:var(--bad)}
@@ -195,7 +195,8 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:6p
 .toggle[aria-checked="true"] .knob{transform:translateX(21px);background:var(--accent-ink)}
 .dontshow{display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--text);cursor:pointer;user-select:none}
 .dontshow input{width:19px;height:19px;flex:none;accent-color:var(--accent);cursor:pointer}
-.btnwide{display:block;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
+.btnwide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
+.btnwide svg{width:18px;height:18px;flex:none}
 .btnwide:hover{opacity:.92}
 .btnwide:active{transform:translateY(1px)}
 footer{text-align:center;font-size:11.5px;color:var(--dim);padding:4px 0 8px}
@@ -264,7 +265,7 @@ footer code{color:var(--muted)}
 
 <div class="overlay" id="helpModal" role="dialog" aria-modal="true" aria-label="Nasıl oynanır">
   <div class="modal">
-    <div class="mhead"><h2>Nasıl Oynanır?</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="mhead"><h2 lang="tr">Nasıl Oynanır?</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <p>Gizli <b>5 harfli</b> bir kelime var. Bu kelime, alfabetik sırada <b>üstteki</b> ve <b>alttaki</b> kelimenin tam <b>arasında</b>.</p>
     <div class="mini">
       <div class="minirow"><span>K</span><span>A</span><span>V</span><span>U</span><span>N</span></div>
@@ -282,8 +283,8 @@ footer code{color:var(--muted)}
 
 <div class="overlay" id="statsModal" role="dialog" aria-modal="true" aria-label="İstatistikler">
   <div class="modal">
-    <div class="mhead"><h2>İstatistikler</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <div class="statgrid">
+    <div class="mhead"><h2 lang="tr">İstatistikler</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="statgrid" lang="tr">
       <div class="stat"><b id="stPlayed">0</b><i>Oynanan</i></div>
       <div class="stat"><b id="stWin">0</b><i>Kazanma %</i></div>
       <div class="stat"><b id="stStreak">0</b><i>Seri</i></div>
@@ -295,8 +296,7 @@ footer code{color:var(--muted)}
       <div id="winMsg"></div>
       <div id="winWord"></div>
       <div class="btnrow">
-        <button class="btn gold" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M6 15h-.5A1.5 1.5 0 0 1 4 13.5v-8A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V6"/></svg>Paylaş</button>
-        <button class="btn ghost" id="btnFree2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>Arşiv</button>
+        <button class="btnwide" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M6 15h-.5A1.5 1.5 0 0 1 4 13.5v-8A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V6"/></svg>Paylaş</button>
       </div>
     </div>
   </div>
@@ -304,7 +304,7 @@ footer code{color:var(--muted)}
 
 <div class="overlay" id="archiveModal" role="dialog" aria-modal="true" aria-label="Arşiv">
   <div class="modal">
-    <div class="mhead"><h2>Arşiv</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="mhead"><h2 lang="tr">Arşiv</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <p class="dim">Son 3 ayın günlük bulmacaları. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile işaretlenir.</p>
     <div class="arclist" id="arclist"></div>
   </div>
@@ -312,7 +312,7 @@ footer code{color:var(--muted)}
 
 <div class="overlay" id="settingsModal" role="dialog" aria-modal="true" aria-label="Ayarlar">
   <div class="modal">
-    <div class="mhead"><h2>Ayarlar</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="mhead"><h2 lang="tr">Ayarlar</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <div class="setrow">
       <span class="setlbl">Karanlık mod<span class="setsub">Koyu (siyah) tema</span></span>
       <button class="toggle" id="tgTheme" role="switch" aria-checked="false" aria-label="Karanlık mod"><span class="knob"></span></button>
@@ -700,7 +700,7 @@ function arcRow(day,today,solved){
   row.addEventListener("click",function(){startArchive(day);});
   return row;
 }
-function openHelp(){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();$("#helpModal").classList.add("open");}
+function openHelp(auto){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();var d=document.querySelector(".dontshow");if(d)d.style.display=auto?"flex":"none";$("#helpModal").classList.add("open");}
 function openStats(){
   closeModals();
   var s=loadStats();
@@ -759,10 +759,10 @@ function bindUI(){
     if(e.key==="Backspace"){handleKey("BACK");return;}
     if(/^[A-Za-zÇĞİÖŞÜçğıiöşü]$/.test(e.key))handleKey(low(e.key));
   });
-  $("#btnHelp").addEventListener("click",openHelp);
+  $("#btnHelp").addEventListener("click",function(){openHelp(false);});
   $("#btnStats").addEventListener("click",function(){openStats();});
   $("#btnFree").addEventListener("click",openArchive);
-  $("#btnFree2").addEventListener("click",openArchive);
+  
   $("#btnShare").addEventListener("click",shareResult);
   $("#btnSettings").addEventListener("click",openSettings);
   $("#tgTheme").addEventListener("click",toggleTheme);
@@ -789,7 +789,7 @@ document.addEventListener("DOMContentLoaded",function(){
     ready=true;
     startDaily();
     applyKb();
-    if(!helpHidden())openHelp();
+    if(!helpHidden())openHelp(true);
   }).catch(function(err){
     showFatal("<b>Kelime havuzu yüklenemedi.</b><br><br><code>kelimehavuzu.txt</code> dosyasının <code>index.html</code> ile aynı klasörde olduğundan emin olun ve siteyi bir web sunucusu üzerinden açın (ör. GitHub Pages veya <code>python3 -m http.server</code>).<br><br><span style='opacity:.6'>"+String(err&&err.message||err)+"</span>");
   });
