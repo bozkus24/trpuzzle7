@@ -125,7 +125,7 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 }
 
 /* ---------- keyboard ---------- */
-#kb{display:flex;flex-direction:column;gap:6px;padding:0 0 6px;margin-bottom:auto}
+#kb{display:flex;flex-direction:column;gap:6px;padding:0 0 6px}
 .krow{display:flex;gap:5px;justify-content:center}
 .key{flex:1;max-width:46px;min-height:clamp(38px,5.7vh,50px);border-radius:6px;background:var(--key);color:var(--text);font-weight:800;font-size:16px;display:grid;place-items:center;user-select:none;touch-action:manipulation;transition:background .1s}
 .key:active{background:var(--key-hi);transform:translateY(1px)}
@@ -198,6 +198,9 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .dontshow input{width:19px;height:19px;flex:none;accent-color:var(--accent);cursor:pointer}
 .btnwide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
 .btnwide svg{width:18px;height:18px;flex:none}
+.btnwide.alt{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+.giveup{align-self:center;margin-top:8px;margin-bottom:auto;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;padding:8px 20px;border-radius:10px}
+.giveup:hover{color:var(--text);border-color:var(--muted)}
 .btnwide:hover{opacity:.92}
 .btnwide:active{transform:translateY(1px)}
 footer{text-align:center;font-size:11.5px;color:var(--dim);padding:4px 0 8px}
@@ -259,6 +262,7 @@ footer code{color:var(--muted)}
   </main>
 
   <div id="kb" aria-label="Klavye"></div>
+  <button class="giveup" id="btnGiveup" type="button">Pes et</button>
 
 </div>
 
@@ -325,6 +329,15 @@ footer code{color:var(--muted)}
   </div>
 </div>
 
+<div class="overlay" id="giveupModal" role="dialog" aria-modal="true" aria-label="Pes et">
+  <div class="modal">
+    <div class="mhead"><h2 lang="tr">Pes Et</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <p class="dim">Pes edersen gizli kelime açığa çıkar ve oyunu <b>kaybedersin</b> (0 puan). Emin misin?</p>
+    <button class="btnwide" id="giveupYes" type="button">Evet, pes et</button>
+    <button class="btnwide alt" id="giveupNo" data-close type="button">Vazgeç</button>
+  </div>
+</div>
+
 <!--EMBED-->
 <script>
 (function(){
@@ -342,7 +355,7 @@ function cmp(a,b){
 
 /* ---------- durum ---------- */
 var WORDS=[],WIDX=new Map(),SET=new Set(),N=0,ANSWERS=[];
-var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,input="";
+var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,gaveUp=false,input="";
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
 var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v2";
 var EPOCH=new Date(2026,0,1);
@@ -463,7 +476,7 @@ function loadStats(){
 function saveStats(s){try{localStorage.setItem(KEY_STATS,JSON.stringify(s));}catch(e){}}
 function saveDay(){
   if(mode!=="daily")return;
-  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,played:countedPlayed}));}catch(e){}
+  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed}));}catch(e){}
 }
 function restoreDay(){
   var s=null;
@@ -472,20 +485,20 @@ function restoreDay(){
   var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
   if(ti===undefined||bi===undefined||!(ti<bi))return;
   if(!s.done&&!(ti<secretIdx&&secretIdx<bi))return;
-  lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;countedPlayed=!!s.played;
+  lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;gaveUp=!!s.g;countedPlayed=!!s.played;
   topSet=!!s.ts;botSet=!!s.bs;
 }
 
 /* ---------- oyun akışı ---------- */
 function startDaily(){
   mode="daily";dayNo=todayNum();secretIdx=secretForDay(dayNo);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;lost=false;input="";topSet=false;botSet=false;countedPlayed=false;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=false;
   restoreDay();render();
 }
 function startArchive(day){
   if(day===todayNum()){startDaily();return;}
   mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;lost=false;input="";topSet=false;botSet=false;countedPlayed=true;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=true;
   closeModals();render();toastMsg("Arşiv oyunu · "+fmtDate(day));
 }
 function ensurePlayed(){
@@ -532,6 +545,16 @@ function loseGame(){
   render();saveDay();toastMsg("Kaybettin!");
   setTimeout(function(){openStats();},1300);
 }
+function openGiveup(){if(done)return;closeModals();$("#giveupModal").classList.add("open");}
+function giveUp(){
+  if(done)return;
+  closeModals();ensurePlayed();
+  gaveUp=true;done=true;lost=true;input="";
+  markResult(dayNo,-1);
+  if(mode==="daily"){var s=loadStats();s.streak=0;saveStats(s);}
+  render();saveDay();toastMsg("Pes ettin! Kelime: "+up(secret));
+  setTimeout(function(){openStats();},1300);
+}
 
 /* ---------- görünüm ---------- */
 function tileRow(el,word){
@@ -540,6 +563,7 @@ function tileRow(el,word){
 }
 function render(){
   els.modeLabel.textContent=(mode==="daily")?("Günün Oyunu #"+(dayNo+1)):("Arşiv #"+(dayNo+1)+" · "+fmtDate(dayNo));
+  var _gb=$("#btnGiveup");if(_gb)_gb.style.visibility=done?"hidden":"visible";
   renderStatus();
   tileRow(els.topTiles,topSet?WORDS[lo]:null);
   tileRow(els.botTiles,botSet?WORDS[hi]:null);
@@ -673,8 +697,8 @@ function handleKey(k){
 }
 
 /* ---------- modallar ---------- */
-function modalOpen(){return $("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open")||$("#archiveModal").classList.contains("open")||$("#settingsModal").classList.contains("open");}
-function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");$("#archiveModal").classList.remove("open");$("#settingsModal").classList.remove("open");}
+function modalOpen(){return $("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open")||$("#archiveModal").classList.contains("open")||$("#settingsModal").classList.contains("open")||$("#giveupModal").classList.contains("open");}
+function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");$("#archiveModal").classList.remove("open");$("#settingsModal").classList.remove("open");$("#giveupModal").classList.remove("open");}
 function openSettings(){closeModals();syncThemeToggle();applyKb();$("#settingsModal").classList.add("open");}
 function openArchive(){
   closeModals();
@@ -715,7 +739,7 @@ function openStats(){
     wb.classList.toggle("lostbox",lost);
     if(lost){
       $("#winStars").innerHTML=SVG_STAR_OUTLINE.repeat(5);
-      $("#winMsg").innerHTML="14 tahminde bulamadın. Gizli kelime:";
+      $("#winMsg").innerHTML=gaveUp?"Pes ettin. Gizli kelime:":"14 tahminde bulamadın. Gizli kelime:";
     }else{
       var score=scoreForGuess(steps);
       $("#winStars").innerHTML=SVG_STAR_FILL.repeat(score)+SVG_STAR_OUTLINE.repeat(5-score);
@@ -767,6 +791,8 @@ function bindUI(){
   $("#btnSettings").addEventListener("click",openSettings);
   $("#selTheme").addEventListener("change",function(){setTheme(this.value);});
   $("#tgKb").addEventListener("click",function(){setKb(!kbEnabled());});
+  $("#btnGiveup").addEventListener("click",openGiveup);
+  $("#giveupYes").addEventListener("click",giveUp);
   $("#helpDont").addEventListener("change",function(){try{localStorage.setItem(KEY_HELP,this.checked?"1":"0");}catch(e){}});
   document.querySelectorAll(".overlay").forEach(function(ov){
     ov.addEventListener("click",function(e){if(e.target===ov||e.target.closest("[data-close]"))closeModals();});
