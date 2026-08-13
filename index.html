@@ -5,74 +5,114 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='14' width='64' height='64' fill='%230f7f74'/%3E%3Cpath d='M32 11 45 26H19Z' fill='%23f5b940'/%3E%3Cpath d='M32 53 19 38h26Z' fill='%23eefaf8'/%3E%3C/svg%3E">
 <!--AR-HEAD-START-->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Aradle — Türkçe kelime bulmacası. Gizli 5 harfli kelime, alfabetik olarak üstteki ve alttaki kelimenin arasında. Aralığı daralt, kelimeyi bul!">
-<title>Aradle — Aradaki Kelimeyi Bul</title>
+<meta name="description" content="Arala — Türkçe kelime bulmacası. Gizli 5 harfli kelime, alfabetik olarak üstteki ve alttaki kelimenin arasında. Aralığı daralt, kelimeyi bul!">
+<title>Arala — Aradaki Kelimeyi Bul</title>
 <style>
 :root{
-  --bg:#0b171d; --bg2:#0e2028; --panel:#12242e; --line:#23414e;
-  --teal:#18a999; --teal-deep:#0f7f74; --teal-soft:#7fd6cb;
-  --text:#eefaf8; --muted:#82a7b0; --dim:#4e707c;
-  --gold:#f5b940; --gold-deep:#c9901b; --gold-ink:#2b1c02;
-  --bad:#e5484d; --key:#24404c; --key-hi:#325764; --tile-ink:#03211d;
+  /* AYDINLIK (beyaz) tema — varsayılan */
+  --bg:#ffffff; --bg2:#ffffff; --panel:#eef1f6; --line:#d7dde6;
+  --text:#12151b; --muted:#5b6472; --dim:#98a1af;
+  --tile:#bcdcff; --tile2:#a6cdfb; --tile-ink:#0d3b6f; --ok:#2e9e5b; --ok-ink:#ffffff;   /* tahmin karoları: açık mavi (TEK renkli öğe) */
+  --accent:#12151b; --accent2:#2a2f38; --accent-ink:#ffffff;   /* vurgu: siyah/beyaz */
+  --bad:#12151b; --bad-bg:#eef1f6; --bad-ink:#12151b;
+  --key:#e7ebf1; --key-hi:#d5dce6;
+  --pip:#cdd5df; --pip2:#9aa4b2;
+  --glow:rgba(0,0,0,.035); --scrim:rgba(18,22,30,.34);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0c0f; --bg2:#131519; --panel:#191c22; --line:#2a2f39;
+  --text:#f2f4f8; --muted:#98a1af; --dim:#5b6472;
+  --tile:#143a75; --tile2:#0f2f61; --tile-ink:#dbeafe; --ok:#35a866; --ok-ink:#ffffff;   /* tahmin karoları: koyu mavi (TEK renkli öğe) */
+  --accent:#f2f4f8; --accent2:#d4d9e0; --accent-ink:#0b0c0f;   /* vurgu: beyaz/siyah */
+  --bad:#f2f4f8; --bad-bg:#191c22; --bad-ink:#f2f4f8;
+  --key:#20242c; --key-hi:#2b313b;
+  --pip:#2c313b; --pip2:#48505c;
+  --glow:rgba(255,255,255,.05); --scrim:rgba(0,0,0,.62);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b0c0f; --bg2:#131519; --panel:#191c22; --line:#2a2f39;
+  --text:#f2f4f8; --muted:#98a1af; --dim:#5b6472;
+  --tile:#143a75; --tile2:#0f2f61; --tile-ink:#dbeafe; --ok:#35a866; --ok-ink:#ffffff;
+  --accent:#f2f4f8; --accent2:#d4d9e0; --accent-ink:#0b0c0f;
+  --bad:#f2f4f8; --bad-bg:#191c22; --bad-ink:#f2f4f8;
+  --key:#20242c; --key-hi:#2b313b;
+  --pip:#2c313b; --pip2:#48505c;
+  --glow:rgba(255,255,255,.05); --scrim:rgba(0,0,0,.62);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%}
 body{
   min-height:100%; background:var(--bg);
-  background-image:radial-gradient(1100px 500px at 50% -10%, #123039 0%, rgba(18,48,57,0) 60%);
+  background-image:radial-gradient(1100px 520px at 50% -12%, var(--glow) 0%, transparent 62%);
   color:var(--text);
   font-family:"Trebuchet MS","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
 }
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:8px}
-#app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:10px 12px 6px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+#app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;padding:12px 15px 8px}
 
 /* ---------- header ---------- */
-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0 8px;border-bottom:1px solid var(--line)}
-.hgroup{display:flex;gap:8px}
-.iconbtn{width:38px;height:38px;border-radius:10px;background:var(--panel);border:1px solid var(--line);color:var(--teal-soft);font-size:17px;display:grid;place-items:center;transition:background .15s}
+header{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 0 8px;border-bottom:1px solid var(--line)}
+.hgroup{display:flex;gap:6px}
+.iconbtn{width:clamp(32px,9vw,38px);height:clamp(32px,9vw,38px);flex:none;border-radius:9px;background:var(--panel);border:1px solid var(--line);color:var(--accent);display:grid;place-items:center;transition:background .15s}
 .iconbtn:hover{background:var(--key)}
-.logo{display:flex;gap:3px;align-items:center;user-select:none}
-.logo .lt{width:23px;height:23px;border-radius:6px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink);font-weight:900;font-size:13px;display:grid;place-items:center;box-shadow:inset 0 -2px 0 rgba(0,0,0,.25)}
-.logo .lt.g{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:var(--gold-ink)}
-.logo .ar{display:flex;flex-direction:column;line-height:.9;font-size:10px;color:var(--gold);margin:0 3px}
-.sub{display:flex;justify-content:space-between;align-items:center;padding:8px 2px 2px;color:var(--muted);font-size:13px;letter-spacing:.4px}
-.sub b{color:var(--teal-soft);font-weight:700}
-.sub .num{font-variant-numeric:tabular-nums}
+.brand{width:clamp(36px,10.5vw,46px);height:clamp(36px,10.5vw,46px);flex:none;background:url("data:image/png;base64,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") center/contain no-repeat}
+
+
+.brandwrap{display:flex;align-items:center;gap:clamp(4px,1.6vw,9px)}
+.logo{display:flex;gap:clamp(2px,.7vw,3px);align-items:center;user-select:none}
+.logo .lt{width:clamp(18px,5.2vw,23px);height:clamp(18px,5.2vw,23px);border-radius:2px;background:var(--panel);border:1px solid var(--line);color:var(--text);font-weight:900;font-size:clamp(10px,3vw,13px);display:grid;place-items:center}
+.logo .lt.g{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--accent-ink);border:none}
+@media(max-width:360px){.logo .lt{width:16px;height:16px;font-size:9px;border-radius:2px}}
+.sub{display:flex;justify-content:center;align-items:center;padding:8px 2px 0;color:var(--muted);font-size:13px;letter-spacing:.4px}
+.statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 2px 2px}
+.sbcol{display:flex;flex-direction:column;gap:2px;min-width:46px}
+.sbcol.right{align-items:flex-end}
+.sblbl{font-size:10px;font-weight:800;letter-spacing:.9px;color:var(--muted)}
+.sbval{font-size:17px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
+.sbcol.lose .sbval{color:var(--bad)}
+.pips{display:flex;align-items:center;gap:clamp(3px,1.3vw,5px);justify-content:center;flex:1}
+.pip{width:clamp(8px,2.3vw,11px);height:clamp(8px,2.3vw,11px);border-radius:50%;background:var(--pip);flex:none;transition:background .2s,box-shadow .2s,transform .2s}
+.pip.gap{margin-left:clamp(6px,2.2vw,12px)}
+.pip.used{background:var(--pip2)}
+.pip.cur{background:var(--accent);transform:scale(1.25)}
+.pip.win{background:var(--accent)}
+.pip.lost{background:var(--bad);opacity:.85}
 
 /* ---------- board ---------- */
-main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px 0 4px}
+main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .board{display:flex;justify-content:center}
-.stack{display:flex;flex-direction:column;gap:9px;justify-content:center;position:relative}
-.brow{display:flex;align-items:center;gap:9px;position:relative;z-index:1}
-.pct{position:relative;width:clamp(46px,12vw,56px);flex:none;text-align:center;font-size:13px;font-weight:800;border-radius:10px;padding:7px 0;line-height:1;font-variant-numeric:tabular-nums;color:var(--tile-ink);background:linear-gradient(180deg,var(--teal),var(--teal-deep));box-shadow:inset 0 -2px 0 rgba(0,0,0,.22)}
+.stack{display:flex;flex-direction:column;gap:10px;justify-content:center;position:relative}
+.brow{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.pct{position:relative;width:clamp(44px,11.5vw,54px);flex:none;text-align:center;font-size:12.5px;font-weight:800;border-radius:6px;padding:7px 0;line-height:1;font-variant-numeric:tabular-nums;color:var(--accent-ink);background:var(--accent)}
 .pct.ghost{visibility:hidden}
 .pct.top::after,.pct.bot::after{content:"";position:absolute;left:50%;transform:translateX(-50%);border:6px solid transparent;z-index:1}
-.pct.top::after{bottom:-6px;border-top-color:var(--teal-deep)}
-.pct.bot::after{top:-6px;border-bottom-color:var(--teal)}
-.cline{position:absolute;left:calc(clamp(46px,12vw,56px)/2 - 1px);width:2px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));opacity:.55;border-radius:2px;z-index:0}
-.cdot{position:absolute;left:calc(clamp(46px,12vw,56px)/2);width:13px;height:13px;border-radius:50%;background:var(--gold);box-shadow:0 0 9px rgba(245,185,64,.65);transform:translate(-50%,-50%);z-index:2;transition:top .4s ease}
-.alpha{display:grid;grid-template-columns:repeat(15,1fr);gap:6px 4px;justify-items:center;max-width:430px;margin:16px auto 2px;padding:0 2px}
-.alpha span{width:100%;max-width:26px;aspect-ratio:1;justify-self:center;border-radius:50%;display:grid;place-items:center;font-size:clamp(9px,2.6vw,12px);font-weight:800;line-height:1;color:var(--dim);background:#10222b;border:1px solid #1d3641;opacity:.5;transition:color .2s,opacity .2s,background .2s,border-color .2s}
-.alpha span.in{color:var(--tile-ink);background:linear-gradient(180deg,var(--teal),var(--teal-deep));border-color:transparent;opacity:1;box-shadow:inset 0 -1px 0 rgba(0,0,0,.25)}
-.alpha span.hit{color:var(--gold-ink);background:linear-gradient(180deg,var(--gold),var(--gold-deep));border-color:transparent;opacity:1;box-shadow:0 0 10px rgba(245,185,64,.5)}
-.tiles{display:flex;gap:6px;justify-content:center}
-.tile{width:clamp(44px,12.5vw,58px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(20px,6vw,27px);font-weight:800;border-radius:10px}
-.bound .tile{background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink);box-shadow:inset 0 -3px 0 rgba(0,0,0,.28),0 2px 10px rgba(0,0,0,.35)}
+.pct.top::after{bottom:-6px;border-top-color:var(--accent)}
+.pct.bot::after{top:-6px;border-bottom-color:var(--accent)}
+.cline{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2 + 6px);width:2px;background:var(--muted);opacity:.5;border-radius:2px;z-index:0}
+.cdot{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2 + 7px);width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--bg);transform:translate(-50%,-50%);z-index:2;transition:top .4s ease}
+.alpha{display:grid;grid-template-columns:repeat(10,1fr);gap:6px 5px;justify-items:center;align-items:center;max-width:360px;margin:clamp(12px,3.2vh,30px) auto;padding:0 4px}
+.alpha span{width:clamp(24px,7.2vw,31px);height:clamp(24px,7.2vw,31px);border-radius:50%;display:grid;place-items:center;font-size:clamp(12px,3.4vw,15px);font-weight:700;line-height:1;color:var(--dim);background:var(--panel);border:1px solid var(--line);opacity:.6;transition:color .2s,opacity .2s,background .2s,border-color .2s}
+.alpha span.in{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
+.alpha span.hit{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
+.tiles{display:flex;gap:7px;justify-content:center}
+.tile{width:clamp(40px,11.6vw,52px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(19px,5.6vw,25px);font-weight:800;border-radius:2px}
+.bound .tile{background:var(--tile);color:var(--tile-ink)}
 .tiles.empty .tile{background:var(--panel);border:2px dashed var(--line);box-shadow:none;color:transparent}
 .guess .tile{background:var(--panel);border:2px dashed var(--line);color:var(--text);position:relative;transition:border-color .15s}
-.guess .tile.filled{border-style:solid;border-color:var(--teal-soft)}
-.guess .tile.next{border-color:rgba(127,214,203,.6)}
-.guess.oob .tile.filled{border-color:rgba(229,72,77,.7)}
+.guess .tile.filled{border-style:solid;border-color:var(--accent)}
+.guess .tile.next{border-color:var(--accent)}
+.guess.oob .tile.filled{border-color:var(--bad)}
 .guess .tile:not(.filled)::before{content:"•";color:var(--dim);font-size:.8em}
-.guess.win .tile{background:linear-gradient(180deg,var(--gold),var(--gold-deep));border:none;color:var(--gold-ink);box-shadow:inset 0 -3px 0 rgba(0,0,0,.22),0 0 18px rgba(245,185,64,.35);animation:pop .5s both}
+.guess.win .tile{background:var(--ok);border:none;color:var(--ok-ink);animation:pop .5s both}
+.guess.lost .tile{background:var(--bad-bg);border:2px solid var(--bad);color:var(--bad-ink);box-shadow:none;animation:pop .4s both}
+.guess.lost .tile::before{content:none}
 .guess.win .tile::before{content:none}
 .guess.win .tile:nth-child(2){animation-delay:.07s}.guess.win .tile:nth-child(3){animation-delay:.14s}
 .guess.win .tile:nth-child(4){animation-delay:.21s}.guess.win .tile:nth-child(5){animation-delay:.28s}
 .shake{animation:shake .45s}
-.tiles.bound{perspective:520px}
-.land .tile{animation:land .5s cubic-bezier(.22,.75,.28,1.12) both}
+.land .tile{animation:land .38s ease both}
 .land .tile:nth-child(2){animation-delay:.09s}
 .land .tile:nth-child(3){animation-delay:.18s}
 .land .tile:nth-child(4){animation-delay:.27s}
@@ -80,17 +120,16 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 @keyframes pop{0%{transform:scale(.6);opacity:.2}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
 @keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
 @keyframes land{
-  0%{transform:translateY(var(--fly,0px)) rotateX(55deg) scale(1.06);opacity:.12}
-  55%{opacity:1}
-  100%{transform:translateY(0) rotateX(0) scale(1);opacity:1}
+  0%{transform:translateY(var(--fly,0px));opacity:.15}
+  100%{transform:translateY(0);opacity:1}
 }
 
 /* ---------- keyboard ---------- */
-#kb{display:flex;flex-direction:column;gap:7px;padding:8px 0 12px;margin-top:auto}
+#kb{display:flex;flex-direction:column;gap:6px;padding:0 0 6px;margin-bottom:auto}
 .krow{display:flex;gap:5px;justify-content:center}
-.key{flex:1;max-width:46px;min-height:52px;border-radius:8px;background:var(--key);color:var(--text);font-weight:800;font-size:16px;display:grid;place-items:center;user-select:none;touch-action:manipulation;transition:background .1s}
+.key{flex:1;max-width:46px;min-height:clamp(38px,5.7vh,50px);border-radius:6px;background:var(--key);color:var(--text);font-weight:800;font-size:16px;display:grid;place-items:center;user-select:none;touch-action:manipulation;transition:background .1s}
 .key:active{background:var(--key-hi);transform:translateY(1px)}
-.key.wide{max-width:76px;flex:1.7;font-size:11.5px;letter-spacing:.5px;color:var(--teal-soft)}
+.key.wide{max-width:76px;flex:1.7;font-size:11.5px;letter-spacing:.5px;color:var(--accent)}
 #kb.off .key{opacity:.35;pointer-events:none}
 
 /* ---------- toast ---------- */
@@ -98,19 +137,19 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ---------- modals ---------- */
-.overlay{position:fixed;inset:0;background:rgba(4,12,16,.7);display:none;place-items:center;z-index:50;padding:16px}
+.overlay{position:fixed;inset:0;background:var(--scrim);display:none;place-items:center;z-index:50;padding:16px}
 .overlay.open{display:grid}
 .modal{background:var(--bg2);border:1px solid var(--line);border-radius:16px;max-width:440px;width:100%;padding:20px 22px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.mhead h2{font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal-soft)}
+.mhead h2{font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent)}
 .x{font-size:20px;color:var(--muted);width:34px;height:34px;border-radius:8px;display:grid;place-items:center}
 .x:hover{background:var(--panel)}
 .modal p{font-size:14px;line-height:1.55;color:var(--text);margin:8px 0}
 .modal p.dim{color:var(--muted);font-size:13px}
 .mini{display:flex;flex-direction:column;gap:5px;align-items:center;margin:14px 0}
 .minirow{display:flex;gap:4px}
-.minirow span{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-weight:800;font-size:14px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink)}
-.minirow.g span{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:var(--gold-ink)}
+.minirow span{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-weight:800;font-size:14px;background:linear-gradient(180deg,var(--tile),var(--tile2));color:var(--tile-ink)}
+.minirow.g span{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--accent-ink)}
 .minicap{font-size:12px;color:var(--muted)}
 .rule{border:none;border-top:1px solid var(--line);margin:14px 0}
 .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 4px}
@@ -119,37 +158,48 @@ main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10
 .stat i{font-style:normal;font-size:10.5px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
 #winBox{display:none;text-align:center;margin-top:14px;padding:16px 12px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
 #winBox.on{display:block}
-#winStars{font-size:26px;letter-spacing:3px;margin-bottom:6px}
+#winStars{display:flex;justify-content:center;gap:3px;color:var(--accent);margin-bottom:8px}
+.iconbtn svg{width:20px;height:20px;display:block}
+.btn svg{width:18px;height:18px;flex:none}
+.x svg{width:18px;height:18px;display:block}
+.key svg{width:23px;height:23px;display:block}
+.arcstat svg{width:14px;height:14px;vertical-align:-2px;margin-right:1px}
+.ii{width:1em;height:1em;vertical-align:-0.13em}
+.wstar{width:30px;height:30px}
 #winMsg{font-size:15px;color:var(--text)}
-#winWord{font-size:22px;font-weight:900;letter-spacing:6px;color:var(--gold);margin:8px 0 2px}
+#winWord{font-size:22px;font-weight:900;letter-spacing:6px;color:var(--ok);margin:8px 0 2px}
+#winBox.lostbox{border-color:var(--line)}
+#winBox.lostbox #winStars{color:var(--dim)}
+#winBox.lostbox #winWord{color:var(--bad)}
 .btnrow{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
-.btn{padding:12px 20px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.4px}
-.btn.gold{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:var(--gold-ink);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
-.btn.ghost{background:var(--panel);color:var(--teal-soft);border:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.4px}
+.btn.gold{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--accent-ink);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.btn.ghost{background:var(--panel);color:var(--accent);border:1px solid var(--line)}
 .arclist{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:60vh;overflow-y:auto;padding-right:2px}
 .arcrow{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 12px;transition:background .12s}
 .arcrow:hover{background:var(--key)}
-.arcrow.today{border-color:var(--teal);box-shadow:inset 0 0 0 1px rgba(24,169,153,.4)}
+.arcrow.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
 .arcinfo{display:flex;flex-direction:column;gap:2px;min-width:0}
 .arcinfo b{font-size:14px;color:var(--text);font-variant-numeric:tabular-nums}
 .arcinfo span{font-size:12px;color:var(--muted)}
-.arcstat{font-size:12.5px;font-weight:800;color:var(--teal-soft);white-space:nowrap}
-.arcstat.ok{color:var(--gold)}
-.logo{cursor:pointer}
-.overlay.home{background:radial-gradient(1200px 600px at 50% -5%,#123039 0%,#0a151b 60%)}
-.homecard{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px;animation:homein .4s ease both}
-@keyframes homein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.homelogo{display:flex;gap:5px;align-items:center;margin-bottom:8px}
-.homelogo .lt{width:34px;height:34px;border-radius:8px;background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink);font-weight:900;font-size:19px;display:grid;place-items:center;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
-.homelogo .lt.g{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:var(--gold-ink)}
-.homelogo .ar{display:flex;flex-direction:column;line-height:.85;font-size:13px;color:var(--gold)}
-.hometag{color:var(--muted);font-size:14px;letter-spacing:.5px;margin:2px 0 24px}
-.homebtns{display:flex;flex-direction:column;gap:11px;width:min(300px,82vw)}
-.hbtn{display:flex;align-items:center;justify-content:center;gap:9px;padding:15px 18px;border-radius:12px;font-weight:800;font-size:15.5px;background:var(--panel);color:var(--text);border:1px solid var(--line);transition:transform .1s,background .12s}
-.hbtn:hover{background:var(--key)}
-.hbtn:active{transform:translateY(1px)}
-.hbtn.primary{background:linear-gradient(180deg,var(--teal),var(--teal-deep));color:var(--tile-ink);border:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.22)}
-.homefoot{margin-top:22px;color:var(--dim);font-size:12px;font-variant-numeric:tabular-nums}
+.arcstat{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:800;color:var(--accent);white-space:nowrap}
+.arcstat.ok{color:var(--accent)}
+.arcstat.lose{color:var(--bad)}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 4px;border-bottom:1px solid var(--line)}
+.setrow:last-child{border-bottom:none}
+.setlbl{font-size:15px;font-weight:700;color:var(--text)}
+.setsub{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:2px}
+.toggle{width:50px;height:29px;flex:none;border-radius:999px;background:var(--key-hi);border:1px solid var(--line);position:relative;transition:background .18s;cursor:pointer}
+.toggle .knob{position:absolute;top:2px;left:2px;width:23px;height:23px;border-radius:50%;background:var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .18s}
+.toggle[aria-checked="true"]{background:var(--ok);border-color:var(--ok)}
+.toggle[aria-checked="true"] .knob{transform:translateX(21px);background:#fff}
+.setsel{appearance:none;-webkit-appearance:none;flex:none;background-color:var(--panel);background-image:url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%238b93a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1.5l5 5 5-5'/></svg>");background-repeat:no-repeat;background-position:right 12px center;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 34px 9px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.dontshow{display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--text);cursor:pointer;user-select:none}
+.dontshow input{width:19px;height:19px;flex:none;accent-color:var(--accent);cursor:pointer}
+.btnwide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
+.btnwide svg{width:18px;height:18px;flex:none}
+.btnwide:hover{opacity:.92}
+.btnwide:active{transform:translateY(1px)}
 footer{text-align:center;font-size:11.5px;color:var(--dim);padding:4px 0 8px}
 footer code{color:var(--muted)}
 #fatal{display:none;text-align:center;padding:40px 18px;color:var(--muted);font-size:14px;line-height:1.6}
@@ -163,25 +213,25 @@ footer code{color:var(--muted)}
 </head>
 <body>
 <!--AR-BODY-START-->
+<script>try{var _t=localStorage.getItem("aradle_theme");if(_t==="dark"||_t==="light")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <div id="app">
   <header>
+    <div class="brandwrap"><div class="brand" id="brand" role="img" aria-label="Arala"></div><div class="logo" aria-label="Arala"><span class="lt">A</span><span class="lt">R</span><span class="lt g">A</span><span class="lt">L</span><span class="lt">A</span></div></div>
     <div class="hgroup">
-      <button class="iconbtn" id="btnHelp" aria-label="Nasıl oynanır">?</button>
-    </div>
-    <div class="logo" aria-label="Aradle">
-      <span class="ar">▲▼</span>
-      <span class="lt">A</span><span class="lt">R</span><span class="lt g">A</span><span class="lt">D</span><span class="lt">L</span><span class="lt">E</span>
-      <span class="ar">▲▼</span>
-    </div>
-    <div class="hgroup">
-      <button class="iconbtn" id="btnFree" aria-label="Arşiv" title="Arşiv">🗓️</button>
-      <button class="iconbtn" id="btnStats" aria-label="İstatistikler" title="İstatistikler">📊</button>
+      <button class="iconbtn" id="btnFree" aria-label="Arşiv" title="Arşiv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></button>
+      <button class="iconbtn" id="btnStats" aria-label="İstatistikler" title="İstatistikler"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="10.5" width="4.7" height="9.5" rx="1.1"/><rect x="9.65" y="4" width="4.7" height="16" rx="1.1"/><rect x="16.3" y="13.5" width="4.7" height="6.5" rx="1.1"/></svg></button>
+      <button class="iconbtn" id="btnHelp" aria-label="Nasıl oynanır" title="Nasıl oynanır"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.4 9.4a2.7 2.7 0 0 1 5.2 .85c0 1.75-2.6 2.05-2.6 3.75"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg></button>
+      <button class="iconbtn" id="btnSettings" aria-label="Ayarlar" title="Ayarlar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     </div>
   </header>
 
   <div class="sub">
     <span id="modeLabel">Günün Oyunu</span>
-    <span>Adım: <b class="num" id="stepsLabel">0</b></span>
+  </div>
+  <div class="statusbar">
+    <div class="sbcol"><span class="sblbl">TAHMİN</span><span class="sbval" id="guessNum">1 / 14</span></div>
+    <div class="pips" id="pips" aria-hidden="true"></div>
+    <div class="sbcol right" id="scoreCol"><span class="sblbl">PUAN</span><span class="sbval" id="scoreNum">5 / 5</span></div>
   </div>
 
   <div id="fatal"></div>
@@ -210,31 +260,13 @@ footer code{color:var(--muted)}
 
   <div id="kb" aria-label="Klavye"></div>
 
-  <footer>Kelime havuzu: <span id="poolCount">—</span></footer>
 </div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
-<div class="overlay home open" id="homeModal" role="dialog" aria-modal="true" aria-label="Aradle ana menü">
-  <div class="homecard">
-    <div class="homelogo" aria-label="Aradle">
-      <span class="ar">▲▼</span>
-      <span class="lt">A</span><span class="lt">R</span><span class="lt g">A</span><span class="lt">D</span><span class="lt">L</span><span class="lt">E</span>
-      <span class="ar">▲▼</span>
-    </div>
-    <p class="hometag">Aradaki kelimeyi bul</p>
-    <div class="homebtns">
-      <button class="hbtn primary" id="hbDaily">🎯 Günlük Oyun</button>
-      <button class="hbtn" id="hbHelp">❓ Nasıl Oynanır</button>
-      <button class="hbtn" id="hbArchive">🗓️ Arşiv</button>
-    </div>
-    <p class="homefoot" id="homeDate"></p>
-  </div>
-</div>
-
 <div class="overlay" id="helpModal" role="dialog" aria-modal="true" aria-label="Nasıl oynanır">
   <div class="modal">
-    <div class="mhead"><h2>Nasıl Oynanır?</h2><button class="x" data-close aria-label="Kapat">✕</button></div>
+    <div class="mhead"><h2 lang="tr">Nasıl Oynanır?</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <p>Gizli <b>5 harfli</b> bir kelime var. Bu kelime, alfabetik sırada <b>üstteki</b> ve <b>alttaki</b> kelimenin tam <b>arasında</b>.</p>
     <div class="mini">
       <div class="minirow"><span>K</span><span>A</span><span>V</span><span>U</span><span>N</span></div>
@@ -244,27 +276,28 @@ footer code{color:var(--muted)}
     </div>
     <p>Bir kelime tahmin et. Tahminin gizli kelimeden <b>önce</b> geliyorsa yeni <b>üst sınır</b>, <b>sonra</b> geliyorsa yeni <b>alt sınır</b> olur. Aralık her tahminle daralır.</p>
     <p>Her sınır kelimenin yanında, gizli kelimeye <b>kalan mesafe</b> yüzde olarak yazar; yaklaştıkça küçülür.</p>
-    <p class="dim">• Başta üst ve alt kutular <b>boştur</b> ve rozetlerde <b>?</b> görünür. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir ve rozetinde kalan mesafe % olarak belirir; karşı taraf sen o yönde tahmin edene kadar <b>?</b> kalır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminlerin geçerli bir Türkçe kelime olmalı — binlerce kelime kabul edilir. Gizli kelime ise yaygın kelimelerden (cevap havuzu) seçilir.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• Ne kadar az adım, o kadar çok yıldız: ≤5 ⭐⭐⭐⭐⭐, ≤8 ⭐⭐⭐⭐, ≤12 ⭐⭐⭐, ≤16 ⭐⭐, sonrası ⭐<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. 🗓️ <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri ✓ olarak görebilirsin.</p>
+    <p class="dim">• Başta üst ve alt kutular <b>boştur</b> ve rozetlerde <b>?</b> görünür. Bir tahmin yaptığında o tahmin gizli kelimeye göre <b>üste ya da alta</b> yerleşir ve rozetinde kalan mesafe % olarak belirir; karşı taraf sen o yönde tahmin edene kadar <b>?</b> kalır.<br>• Kelimelerin solundaki küçük <b>% rozetleri</b>, üstteki ve alttaki sınır kelimenin gizli kelimeye <b>ne kadar mesafe kaldığını</b> gösterir; yaklaştıkça yüzde <b>küçülür, %0'a</b> iner. Aradaki altın <b>nokta</b> gizli kelimenin iki sınır arasında nereye düştüğünü gösterir: üst sınıra yakınsa yukarı, alta yakınsa aşağı kayar.<br>• Alttaki <b>alfabe rozetleri</b> (2 satır) ipucudur ve <b>yazdıkça güncellenir</b>: sıradaki harfin olabileceği aralık açık renkte yanar, elenenler koyu kalır. Örn. sınırlar KENAR–ZURNA iken K yazarsan ikinci harf için E–Z yanar. Aralık dışına düşersen hepsi kararır.<br>• Tahminlerin geçerli bir Türkçe kelime olmalı — binlerce kelime kabul edilir. Gizli kelime ise yaygın kelimelerden (cevap havuzu) seçilir.<br>• Aralık dışındaki tahminler adım saymaz.<br>• Türk alfabesi sırası geçerli: a b c ç d e f g ğ h ı i j k l m n o ö p r s ş t u ü v y z<br>• <b>14 tahmin</b> hakkın var. Ne kadar erken bulursan o kadar çok <b>puan</b>: ilk 5 tahminde <b>5 puan</b>, 6–8'de 4, 9–11'de 3, 12–13'te 2, 14. tahminde 1 puan. <b>14 tahminde bulamazsan kaybedersin</b> (0 puan). Üstteki noktalar hakkını ve puan kademelerini gösterir.<br>• Her gün yeni bir kelime! Site açıldığında günün oyunu gelir. <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg> <b>Arşiv</b>'den son 3 ayın bulmacalarını oynayabilir, çözdüğün günleri <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile görebilirsin.</p>
+    <label class="dontshow"><input type="checkbox" id="helpDont"> Bir daha gösterme</label>
+    <button class="btnwide" id="helpOk" data-close>Anladım</button>
   </div>
 </div>
 
 <div class="overlay" id="statsModal" role="dialog" aria-modal="true" aria-label="İstatistikler">
   <div class="modal">
-    <div class="mhead"><h2>İstatistikler</h2><button class="x" data-close aria-label="Kapat">✕</button></div>
-    <div class="statgrid">
+    <div class="mhead"><h2 lang="tr">İstatistikler</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="statgrid" lang="tr">
       <div class="stat"><b id="stPlayed">0</b><i>Oynanan</i></div>
       <div class="stat"><b id="stWin">0</b><i>Kazanma %</i></div>
       <div class="stat"><b id="stStreak">0</b><i>Seri</i></div>
       <div class="stat"><b id="stBest">0</b><i>En İyi Seri</i></div>
     </div>
-    <p class="dim" style="text-align:center">Ortalama adım: <b id="stAvg">—</b> <span style="opacity:.6">(günlük oyunlar)</span></p>
+    <p class="dim" style="text-align:center">Ortalama puan: <b id="stAvg">—</b> <span style="opacity:.6">(kazanılan oyunlar)</span></p>
     <div id="winBox">
       <div id="winStars"></div>
       <div id="winMsg"></div>
       <div id="winWord"></div>
       <div class="btnrow">
-        <button class="btn gold" id="btnShare">📋 Paylaş</button>
-        <button class="btn ghost" id="btnFree2">🗓️ Arşiv</button>
+        <button class="btnwide" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M6 15h-.5A1.5 1.5 0 0 1 4 13.5v-8A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V6"/></svg>Paylaş</button>
       </div>
     </div>
   </div>
@@ -272,9 +305,23 @@ footer code{color:var(--muted)}
 
 <div class="overlay" id="archiveModal" role="dialog" aria-modal="true" aria-label="Arşiv">
   <div class="modal">
-    <div class="mhead"><h2>Arşiv</h2><button class="x" data-close aria-label="Kapat">✕</button></div>
-    <p class="dim">Son 3 ayın günlük bulmacaları. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler ✓ ile işaretlenir.</p>
+    <div class="mhead"><h2 lang="tr">Arşiv</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <p class="dim">1 Ağustos'tan bu yana günlük bulmacalar. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile işaretlenir.</p>
     <div class="arclist" id="arclist"></div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsModal" role="dialog" aria-modal="true" aria-label="Ayarlar">
+  <div class="modal">
+    <div class="mhead"><h2 lang="tr">Ayarlar</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="setrow">
+      <span class="setlbl">Tema<span class="setsub">Koyu veya açık.</span></span>
+      <select class="setsel" id="selTheme" aria-label="Tema"><option value="light">Açık</option><option value="dark">Koyu</option></select>
+    </div>
+    <div class="setrow">
+      <span class="setlbl">Ekran klavyesi<span class="setsub">Fiziksel klavye kullanıyorsanız kapatabilirsiniz.</span></span>
+      <button class="toggle" id="tgKb" role="switch" aria-checked="true" aria-label="Ekran klavyesi"><span class="knob"></span></button>
+    </div>
   </div>
 </div>
 
@@ -295,13 +342,59 @@ function cmp(a,b){
 
 /* ---------- durum ---------- */
 var WORDS=[],WIDX=new Map(),SET=new Set(),N=0,ANSWERS=[];
-var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,input="";
+var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,input="";
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
-var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v1";
+var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v2";
 var EPOCH=new Date(2026,0,1);
+var MAX_GUESSES=14;
+/* Puan kademeleri: ilk 5 tahmin 5 puan, 6-8 → 4, 9-11 → 3, 12-13 → 2, 14 → 1 (nokta grupları 5-3-3-2-1) */
+function scoreForGuess(n){if(n<=5)return 5;if(n<=8)return 4;if(n<=11)return 3;if(n<=13)return 2;if(n<=14)return 1;return 0;}
+var PIP_GROUPS=[5,3,3,2,1];
 
 function $(s){return document.querySelector(s);}
 var els={};
+
+/* ---------- SVG ikonlar (emoji yerine) ---------- */
+var SVG_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9L2.5 12z"/><path d="M15 9.5l-5 5M10 9.5l5 5"/></svg>';
+var SVG_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg>';
+var SVG_X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+var STAR_PATH='M12 2.6l2.85 5.77 6.37 .93-4.61 4.49 1.09 6.35L12 17.6l-5.7 3 1.09-6.35L2.78 9.3l6.37-.93z';
+var SVG_STAR_FILL='<svg class="wstar" viewBox="0 0 24 24" fill="currentColor"><path d="'+STAR_PATH+'"/></svg>';
+var SVG_STAR_OUTLINE='<svg class="wstar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="'+STAR_PATH+'"/></svg>';
+/* ---------- tema (aydınlık/karanlık) ---------- */
+var KEY_THEME="aradle_theme";
+function effectiveTheme(){
+  var t=document.documentElement.getAttribute("data-theme");
+  if(t==="dark"||t==="light")return t;
+  return (window.matchMedia&&window.matchMedia("(prefers-color-scheme:dark)").matches)?"dark":"light";
+}
+function syncThemeToggle(){var s=$("#selTheme");if(s)s.value=effectiveTheme();}
+function applyTheme(t){
+  if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);
+  else document.documentElement.removeAttribute("data-theme");
+  syncThemeToggle();
+}
+function setTheme(t){
+  try{localStorage.setItem(KEY_THEME,t);}catch(e){}
+  applyTheme(t);
+}
+function initTheme(){
+  var t=null;try{t=localStorage.getItem(KEY_THEME);}catch(e){}
+  applyTheme((t==="dark"||t==="light")?t:null);
+  if(window.matchMedia){
+    var mq=window.matchMedia("(prefers-color-scheme:dark)");
+    var onch=function(){var s=null;try{s=localStorage.getItem(KEY_THEME);}catch(e){}if(s!=="dark"&&s!=="light")syncThemeToggle();};
+    if(mq.addEventListener)mq.addEventListener("change",onch);else if(mq.addListener)mq.addListener(onch);
+  }
+}
+/* ---------- ekran klavyesi ---------- */
+var KEY_KB="aradle_kb";
+function kbEnabled(){var v=null;try{v=localStorage.getItem(KEY_KB);}catch(e){}return v!=="0";}
+function applyKb(){var on=kbEnabled();if(els.kb)els.kb.style.display=on?"":"none";var t=$("#tgKb");if(t)t.setAttribute("aria-checked",on?"true":"false");}
+function setKb(on){try{localStorage.setItem(KEY_KB,on?"1":"0");}catch(e){}applyKb();}
+/* ---------- nasıl oynanır: bir daha gösterme ---------- */
+var KEY_HELP="aradle_help_hide";
+function helpHidden(){var v=null;try{v=localStorage.getItem(KEY_HELP);}catch(e){}return v==="1";}
 
 /* ---------- kelime havuzu ---------- */
 function loadWords(){
@@ -351,21 +444,26 @@ function secretForDay(day){
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function dateOf(day){return new Date(EPOCH.getTime()+day*864e5);}
 function fmtDate(day){var d=dateOf(day);return d.getDate()+" "+MONTHS[d.getMonth()]+" "+d.getFullYear();}
-var KEY_ARC="aradle_solved_v1";
+var KEY_ARC="aradle_result_v1";
+/* sonuç kodu: 1..5 = kazanıldı (puan), -1 = kaybedildi */
 function loadArc(){try{var o=JSON.parse(localStorage.getItem(KEY_ARC));return (o&&typeof o==="object")?o:{};}catch(e){return {};}}
-function markSolved(day,st){try{var o=loadArc();var k=String(day);if(o[k]==null||st<o[k])o[k]=st;localStorage.setItem(KEY_ARC,JSON.stringify(o));}catch(e){}}
+function markResult(day,code){try{var o=loadArc();var k=String(day);var prev=o[k];
+  // kazanmayı korur (daha yüksek puan kazanır); kayıp yalnızca hiç sonuç yoksa yazılır
+  if(code>0){if(prev==null||prev<0||code>prev)o[k]=code;}
+  else{if(prev==null)o[k]=code;}
+  localStorage.setItem(KEY_ARC,JSON.stringify(o));}catch(e){}}
 
 /* ---------- kalıcılık ---------- */
 function loadStats(){
   try{var s=JSON.parse(localStorage.getItem(KEY_STATS));
-    if(s&&typeof s==="object")return {played:s.played|0,wins:s.wins|0,totalSteps:s.totalSteps|0,streak:s.streak|0,best:s.best|0,lastWinDay:(typeof s.lastWinDay==="number")?s.lastWinDay:null};
+    if(s&&typeof s==="object")return {played:s.played|0,wins:s.wins|0,totalScore:s.totalScore|0,streak:s.streak|0,best:s.best|0,lastWinDay:(typeof s.lastWinDay==="number")?s.lastWinDay:null};
   }catch(e){}
-  return {played:0,wins:0,totalSteps:0,streak:0,best:0,lastWinDay:null};
+  return {played:0,wins:0,totalScore:0,streak:0,best:0,lastWinDay:null};
 }
 function saveStats(s){try{localStorage.setItem(KEY_STATS,JSON.stringify(s));}catch(e){}}
 function saveDay(){
   if(mode!=="daily")return;
-  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,played:countedPlayed}));}catch(e){}
+  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,played:countedPlayed}));}catch(e){}
 }
 function restoreDay(){
   var s=null;
@@ -374,27 +472,26 @@ function restoreDay(){
   var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
   if(ti===undefined||bi===undefined||!(ti<bi))return;
   if(!s.done&&!(ti<secretIdx&&secretIdx<bi))return;
-  lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;countedPlayed=!!s.played;
+  lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;countedPlayed=!!s.played;
   topSet=!!s.ts;botSet=!!s.bs;
 }
 
 /* ---------- oyun akışı ---------- */
 function startDaily(){
   mode="daily";dayNo=todayNum();secretIdx=secretForDay(dayNo);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=false;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;input="";topSet=false;botSet=false;countedPlayed=false;
   restoreDay();render();
 }
 function startArchive(day){
   if(day===todayNum()){startDaily();return;}
   mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;input="";topSet=false;botSet=false;countedPlayed=true;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;input="";topSet=false;botSet=false;countedPlayed=true;
   closeModals();render();toastMsg("Arşiv oyunu · "+fmtDate(day));
 }
 function ensurePlayed(){
   if(mode!=="daily"||countedPlayed)return;
   countedPlayed=true;var s=loadStats();s.played++;saveStats(s);
 }
-function stars(n){return n<=5?5:n<=8?4:n<=12?3:n<=16?2:1;}
 function closeness(i){return Math.max(1,Math.round(100*(1-Math.abs(secretIdx-i)/(N-1))));}
 function fmtDist(d){return "%"+(Math.abs(d)/(N-1)*100).toFixed(1);}
 
@@ -410,19 +507,29 @@ function submitGuess(){
   steps++;ensurePlayed();
   if(cmp(w,secret)<0){lo=gi;topSet=true;flip("top");}
   else{hi=gi;botSet=true;flip("bot");}
-  input="";render();saveDay();
+  input="";
+  if(steps>=MAX_GUESSES){loseGame();return;}
+  render();saveDay();
 }
 function winGame(){
   done=true;input="";
-  markSolved(dayNo,steps);
+  var score=scoreForGuess(steps);
+  markResult(dayNo,score);
   if(mode==="daily"){
     var s=loadStats();
-    s.wins++;s.totalSteps+=steps;
+    s.wins++;s.totalScore+=score;
     s.streak=(s.lastWinDay===dayNo-1)?s.streak+1:1;
     if(s.streak>s.best)s.best=s.streak;
     s.lastWinDay=dayNo;saveStats(s);
   }
-  render();saveDay();toastMsg("Muhteşem! 🎉");
+  render();saveDay();toastMsg("Muhteşem! "+score+" puan");
+  setTimeout(function(){openStats();},1300);
+}
+function loseGame(){
+  done=true;lost=true;input="";
+  markResult(dayNo,-1);
+  if(mode==="daily"){var s=loadStats();s.streak=0;saveStats(s);}
+  render();saveDay();toastMsg("Kaybettin!");
   setTimeout(function(){openStats();},1300);
 }
 
@@ -433,7 +540,7 @@ function tileRow(el,word){
 }
 function render(){
   els.modeLabel.textContent=(mode==="daily")?("Günün Oyunu #"+(dayNo+1)):("Arşiv #"+(dayNo+1)+" · "+fmtDate(dayNo));
-  els.stepsLabel.textContent=steps;
+  renderStatus();
   tileRow(els.topTiles,topSet?WORDS[lo]:null);
   tileRow(els.botTiles,botSet?WORDS[hi]:null);
   els.topTiles.classList.toggle("empty",!topSet);
@@ -452,7 +559,7 @@ function render(){
     if(ct===0)la=IDX.get(topW[pos])+(pos===4?1:0);
     if(cb===0)lb=IDX.get(botW[pos])-(pos===4?1:0);
   }
-  var g=els.guessTiles;g.innerHTML="";g.classList.toggle("win",done);g.classList.toggle("oob",oob);
+  var g=els.guessTiles;g.innerHTML="";g.classList.toggle("win",done&&!lost);g.classList.toggle("lost",lost);g.classList.toggle("oob",oob);
   for(var i=0;i<5;i++){
     var t=document.createElement("div");t.className="tile";
     var ch=done?secret[i]:(input[i]||"");
@@ -483,6 +590,31 @@ function placeConnector(){
     var pad=9,dTop=lineTop+pad,dBot=lineBot-pad;
     if(dBot<dTop){dTop=dBot=(lineTop+lineBot)/2;}
     els.cdot.style.top=(dTop+f*(dBot-dTop))+"px";
+  }
+}
+function buildPips(){
+  els.pips.innerHTML="";
+  var idx=0;
+  for(var gi=0;gi<PIP_GROUPS.length;gi++){
+    for(var j=0;j<PIP_GROUPS[gi];j++){
+      var d=document.createElement("span");
+      d.className="pip"+((gi>0&&j===0)?" gap":"");
+      els.pips.appendChild(d);idx++;
+    }
+  }
+}
+function renderStatus(){
+  var g=done?steps:Math.min(steps+1,MAX_GUESSES);
+  els.guessNum.textContent=g+" / "+MAX_GUESSES;
+  var sc=lost?0:(done?scoreForGuess(steps):scoreForGuess(steps+1));
+  els.scoreNum.textContent=sc+" / 5";
+  els.scoreCol.classList.toggle("lose",lost);
+  var pips=els.pips.children;
+  for(var i=0;i<pips.length;i++){
+    var p=pips[i];p.classList.remove("used","cur","win","lost");
+    if(lost){p.classList.add("lost");}
+    else if(done){ if(i<steps-1)p.classList.add("used"); else if(i===steps-1)p.classList.add("win"); }
+    else{ if(i<steps)p.classList.add("used"); else if(i===steps)p.classList.add("cur"); }
   }
 }
 function shake(){
@@ -525,8 +657,8 @@ function buildKeyboard(){
     row.forEach(function(k){
       var b=document.createElement("button");
       b.className="key";b.dataset.k=k;
-      if(k==="ENTER"){b.textContent="TAMAM";b.classList.add("wide");}
-      else if(k==="BACK"){b.textContent="⌫";b.classList.add("wide");}
+      if(k==="ENTER"){b.textContent="ENTER";b.classList.add("wide");}
+      else if(k==="BACK"){b.innerHTML=SVG_BACK;b.classList.add("wide");b.setAttribute("aria-label","Sil");}
       else b.textContent=up(k);
       r.appendChild(b);
     });
@@ -541,15 +673,14 @@ function handleKey(k){
 }
 
 /* ---------- modallar ---------- */
-function modalOpen(){return $("#homeModal").classList.contains("open")||$("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open")||$("#archiveModal").classList.contains("open");}
-function openHome(){closeModals();$("#homeModal").classList.add("open");}
-function closeHome(){$("#homeModal").classList.remove("open");}
-function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");$("#archiveModal").classList.remove("open");}
+function modalOpen(){return $("#helpModal").classList.contains("open")||$("#statsModal").classList.contains("open")||$("#archiveModal").classList.contains("open")||$("#settingsModal").classList.contains("open");}
+function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal").classList.remove("open");$("#archiveModal").classList.remove("open");$("#settingsModal").classList.remove("open");}
+function openSettings(){closeModals();syncThemeToggle();applyKb();$("#settingsModal").classList.add("open");}
 function openArchive(){
   closeModals();
   var t=todayNum(),arc=loadArc(),host=$("#arclist");host.innerHTML="";
-  for(var i=0;i<90;i++){
-    var day=t-i;if(day<0)break;
+  var start=Math.round((new Date(2026,7,1)-EPOCH)/864e5);
+  for(var day=t;day>=start&&day>=0;day--){
     host.appendChild(arcRow(day,t,arc[String(day)]));
   }
   $("#archiveModal").classList.add("open");
@@ -562,13 +693,14 @@ function arcRow(day,today,solved){
   var dt=document.createElement("span");dt.textContent=fmtDate(day);
   info.appendChild(num);info.appendChild(dt);
   var stat=document.createElement("div");
-  if(solved!=null){stat.className="arcstat ok";stat.textContent="✓ "+solved+" adım";}
-  else{stat.className="arcstat";stat.textContent="Oyna ›";}
+  if(solved>0){stat.className="arcstat ok";stat.innerHTML=SVG_CHECK+" "+solved+" puan";}
+  else if(solved===-1){stat.className="arcstat lose";stat.innerHTML=SVG_X+" Kayıp";}
+  else{stat.className="arcstat";stat.textContent="";}
   row.appendChild(info);row.appendChild(stat);
   row.addEventListener("click",function(){startArchive(day);});
   return row;
 }
-function openHelp(){closeModals();$("#helpModal").classList.add("open");}
+function openHelp(auto){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();var d=document.querySelector(".dontshow");if(d)d.style.display=auto?"flex":"none";$("#helpModal").classList.add("open");}
 function openStats(){
   closeModals();
   var s=loadStats();
@@ -576,29 +708,36 @@ function openStats(){
   $("#stWin").textContent=s.played?Math.round(s.wins/s.played*100):0;
   $("#stStreak").textContent=s.streak;
   $("#stBest").textContent=s.best;
-  $("#stAvg").textContent=s.wins?(s.totalSteps/s.wins).toFixed(1):"—";
+  $("#stAvg").textContent=s.wins?(s.totalScore/s.wins).toFixed(1):"—";
   var wb=$("#winBox");
   if(done){
     wb.classList.add("on");
-    var st=stars(steps);
-    $("#winStars").textContent="⭐".repeat(st)+"☆".repeat(5-st);
-    $("#winMsg").textContent="Gizli kelimeyi "+steps+" adımda buldun!";
+    wb.classList.toggle("lostbox",lost);
+    if(lost){
+      $("#winStars").innerHTML=SVG_STAR_OUTLINE.repeat(5);
+      $("#winMsg").innerHTML="14 tahminde bulamadın. Gizli kelime:";
+    }else{
+      var score=scoreForGuess(steps);
+      $("#winStars").innerHTML=SVG_STAR_FILL.repeat(score)+SVG_STAR_OUTLINE.repeat(5-score);
+      $("#winMsg").innerHTML="Gizli kelimeyi <b>"+steps+".</b> tahminde buldun · <b>"+score+" puan</b>";
+    }
     $("#winWord").textContent=up(secret);
   }else wb.classList.remove("on");
   $("#statsModal").classList.add("open");
 }
 function shareResult(){
-  var st=stars(steps);
-  var head=(mode==="daily")?("Aradle #"+(dayNo+1)):("Aradle Arşiv #"+(dayNo+1));
-  var txt=head+" "+"⭐".repeat(st)+"☆".repeat(5-st)+"\nGizli kelimeyi "+steps+" adımda buldum! ▲🎯▼";
+  var head=(mode==="daily")?("Arala #"+(dayNo+1)):("Arala Arşiv #"+(dayNo+1));
+  var txt;
+  if(lost){txt=head+" — Kaybettim (0 puan)\n14 tahminde bulamadım.";}
+  else{var score=scoreForGuess(steps);txt=head+" — "+score+"/5 puan\nGizli kelimeyi "+steps+". tahminde buldum.";}
   function fallback(){
     var ta=document.createElement("textarea");ta.value=txt;
     document.body.appendChild(ta);ta.select();
-    try{document.execCommand("copy");toastMsg("Kopyalandı 📋");}catch(e){toastMsg(txt);}
+    try{document.execCommand("copy");toastMsg("Kopyalandı");}catch(e){toastMsg(txt);}
     document.body.removeChild(ta);
   }
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(function(){toastMsg("Kopyalandı 📋");},fallback);
+    navigator.clipboard.writeText(txt).then(function(){toastMsg("Kopyalandı");},fallback);
   }else fallback();
 }
 
@@ -620,24 +759,25 @@ function bindUI(){
     if(e.key==="Backspace"){handleKey("BACK");return;}
     if(/^[A-Za-zÇĞİÖŞÜçğıiöşü]$/.test(e.key))handleKey(low(e.key));
   });
-  $("#btnHelp").addEventListener("click",openHelp);
+  $("#btnHelp").addEventListener("click",function(){openHelp(false);});
   $("#btnStats").addEventListener("click",function(){openStats();});
   $("#btnFree").addEventListener("click",openArchive);
-  $("#btnFree2").addEventListener("click",openArchive);
+  
   $("#btnShare").addEventListener("click",shareResult);
-  $(".logo").addEventListener("click",openHome);
-  $("#hbDaily").addEventListener("click",function(){startDaily();closeHome();});
-  $("#hbHelp").addEventListener("click",function(){closeHome();openHelp();});
-  $("#hbArchive").addEventListener("click",function(){closeHome();openArchive();});
+  $("#btnSettings").addEventListener("click",openSettings);
+  $("#selTheme").addEventListener("change",function(){setTheme(this.value);});
+  $("#tgKb").addEventListener("click",function(){setKb(!kbEnabled());});
+  $("#helpDont").addEventListener("change",function(){try{localStorage.setItem(KEY_HELP,this.checked?"1":"0");}catch(e){}});
   document.querySelectorAll(".overlay").forEach(function(ov){
     ov.addEventListener("click",function(e){if(e.target===ov||e.target.closest("[data-close]"))closeModals();});
   });
 }
 
 document.addEventListener("DOMContentLoaded",function(){
-  ["modeLabel","stepsLabel","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","poolCount","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
+  ["modeLabel","guessNum","scoreNum","scoreCol","pips","topTiles","botTiles","guessTiles","guessWrap","topPct","botPct","stack","cline","cdot","kb","toast","alpha"].forEach(function(id){els[id]=document.getElementById(id);});
+  initTheme();
   window.addEventListener("resize",function(){if(ready)placeConnector();});
-  buildAlpha();buildKeyboard();bindUI();
+  buildAlpha();buildPips();buildKeyboard();bindUI();
   loadWords().then(function(texts){
     var ansSet=parseSet(texts[0]),accSet=parseSet(texts[1]||"");
     if(ansSet.size<10)throw new Error("az");
@@ -646,16 +786,16 @@ document.addEventListener("DOMContentLoaded",function(){
     WORDS=Array.from(uni).sort(cmp);N=WORDS.length;
     WORDS.forEach(function(w,i){WIDX.set(w,i);SET.add(w);});
     ANSWERS=Array.from(ansSet).sort(cmp);
-    els.poolCount.textContent=N+" kelime · "+ANSWERS.length+" cevap";
     ready=true;
     startDaily();
-    $("#homeDate").textContent=fmtDate(todayNum())+" · #"+(todayNum()+1);
+    applyKb();
+    if(!helpHidden())openHelp(true);
   }).catch(function(err){
     showFatal("<b>Kelime havuzu yüklenemedi.</b><br><br><code>kelimehavuzu.txt</code> dosyasının <code>index.html</code> ile aynı klasörde olduğundan emin olun ve siteyi bir web sunucusu üzerinden açın (ör. GitHub Pages veya <code>python3 -m http.server</code>).<br><br><span style='opacity:.6'>"+String(err&&err.message||err)+"</span>");
   });
   if(new URLSearchParams(location.search).has("debug")){
     window.__aradle={
-      state:function(){return {N:N,answers:ANSWERS.length,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,mode:mode,today:todayNum(),words:WORDS,inAnswers:ANSWERS.indexOf(secret)>=0};},
+      state:function(){return {N:N,answers:ANSWERS.length,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,lost:lost,score:(done&&!lost)?scoreForGuess(steps):(lost?0:scoreForGuess(steps+1)),mode:mode,today:todayNum(),words:WORDS,inAnswers:ANSWERS.indexOf(secret)>=0};},
       guess:function(w){input=low(w);submitGuess();},
       archive:function(day){startArchive(day);},
       daily:startDaily,
