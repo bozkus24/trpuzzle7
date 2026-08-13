@@ -195,7 +195,8 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .toggle[aria-checked="true"]{background:var(--ok);border-color:var(--ok)}
 .toggle[aria-checked="true"] .knob{transform:translateX(21px);background:#fff}
 .setsel{appearance:none;-webkit-appearance:none;flex:none;background-color:var(--panel);background-image:url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%238b93a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 1.5l5 5 5-5'/></svg>");background-repeat:no-repeat;background-position:right 12px center;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 34px 9px 14px;font-size:14px;font-weight:700;cursor:pointer}
-.dontshow{display:flex;align-items:center;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:14px;color:var(--text);cursor:pointer;user-select:none}
+.dontshow-sep{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.dontshow{display:inline-flex;align-items:center;gap:9px;font-size:14px;color:var(--text);cursor:pointer;user-select:none}
 .dontshow input{width:19px;height:19px;flex:none;accent-color:var(--accent);cursor:pointer}
 .btnwide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
 .btnwide svg{width:18px;height:18px;flex:none}
@@ -277,7 +278,7 @@ footer code{color:var(--muted)}
       <div class="minicap">kavun &lt; <b>sepet</b> &lt; tavuk — alfabetik sıra</div>
     </div>
     <p class="dim">• Bir kelime tahmin ettiğinde, bu kelime alfabede gizli kelimeden <b>sonra</b> geliyorsa <b>alt sınır</b>, <b>önce</b> geliyorsa <b>üst sınır</b> olarak kabul edilir.<br>• Üst ve alt sınırın gizli kelimeye yakınlığı, yanlarındaki <b>oranla (%)</b> gösterilir. Bu oranların arasındaki <b>yuvarlak</b> ise gizli kelimenin hangi sınıra daha yakın olduğunu belirtir.<br>• Sınırlar belirlenene kadar üst ve alt sınır, alfabenin başı ve sonu sayılır (<b>aaaaa – zzzzz</b>).<br>• Yalnızca sınırlar arasında kalan geçerli <b>Türkçe kelimeler</b> tahmin olarak kabul edilir.<br>• Bulmacanın altında, yardımcı olması için <b>alfabe</b> gösterilir. Üst ve alt sınıra göre yazılabilecek harfler <b>açık renkte</b>, yazılamayacaklar ise <b>koyu renkte</b> gösterilir.<br>• Toplam <b>14 tahmin</b> hakkın var. Ne kadar erken bulursan o kadar çok <b>puan</b> alırsın: ilk 5 tahminde <b>5 puan</b>, 6–8’de 4, 9–11’de 3, 12–13’te 2, 14. tahminde 1 puan. 14 tahminde bulamazsan kaybeder ve puan alamazsın. Üstteki noktalar, kaçıncı tahmin hakkında olduğunu ve hangi puan aralığında bulunduğunu gösterir.<br>• Gizli kelime <b>her gün</b> değişir. Geçmiş kelimeleri <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg> <b>Arşiv</b> bölümünden oynayarak kendini deneyebilirsin. Her gün gelip oynamayı unutma!</p>
-    <label class="dontshow"><input type="checkbox" id="helpDont"> Bir daha gösterme</label>
+    <div class="dontshow-sep"><label class="dontshow"><input type="checkbox" id="helpDont"> Bir daha gösterme</label></div>
     <button class="btnwide" id="helpOk" data-close>Anladım</button>
   </div>
 </div>
@@ -719,7 +720,7 @@ function arcRow(day,today,solved){
   row.addEventListener("click",function(){startArchive(day);});
   return row;
 }
-function openHelp(auto){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();var d=document.querySelector(".dontshow");if(d)d.style.display=auto?"flex":"none";$("#helpModal").classList.add("open");}
+function openHelp(auto){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();var d=document.querySelector(".dontshow-sep");if(d)d.style.display=auto?"":"none";$("#helpModal").classList.add("open");}
 function openStats(){
   closeModals();
   var s=loadStats();
