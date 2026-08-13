@@ -99,6 +99,7 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .tiles{display:flex;gap:7px;justify-content:center}
 .tile{width:clamp(40px,11.6vw,52px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(19px,5.6vw,25px);font-weight:800;border-radius:2px}
 .bound .tile{background:var(--tile);color:var(--tile-ink)}
+.tiles.ph .tile{color:rgba(255,255,255,.62)}
 .tiles.empty .tile{background:var(--panel);border:2px dashed var(--line);box-shadow:none;color:transparent}
 .guess .tile{background:var(--panel);border:2px dashed var(--line);color:var(--text);position:relative;transition:border-color .15s}
 .guess .tile.filled{border-style:solid;border-color:var(--accent)}
@@ -567,10 +568,10 @@ function render(){
   renderStatus();
   tileRow(els.topTiles,topSet?WORDS[lo]:"aaaaa");
   tileRow(els.botTiles,botSet?WORDS[hi]:"zzzzz");
-  els.topTiles.classList.remove("empty");
-  els.botTiles.classList.remove("empty");
-  els.topPct.textContent=fmtDist(secretIdx-lo);
-  els.botPct.textContent=fmtDist(hi-secretIdx);
+  els.topTiles.classList.toggle("ph",!topSet);
+  els.botTiles.classList.toggle("ph",!botSet);
+  els.topPct.textContent=topSet?fmtDist(secretIdx-lo):"?";
+  els.botPct.textContent=botSet?fmtDist(hi-secretIdx):"?";
   /* sıradaki harf için olası aralık: yazılan önek sınır kelimelerle karşılaştırılır */
   var pos=Math.min(input.length,4);
   var pre=input.slice(0,pos);
@@ -607,7 +608,7 @@ function placeConnector(){
   var lineTop=(tr.bottom-sr.top)+9,lineBot=(br.top-sr.top)-9;
   if(lineBot<lineTop)lineBot=lineTop;
   els.cline.style.top=lineTop+"px";els.cline.style.height=(lineBot-lineTop)+"px";
-  var shown=true;
+  var shown=topSet||botSet;
   els.cdot.style.display=shown?"block":"none";
   if(shown){
     var f=(hi>lo)?(secretIdx-lo)/(hi-lo):0.5;f=Math.max(0,Math.min(1,f));
