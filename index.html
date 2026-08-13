@@ -67,8 +67,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px;pad
 @media(max-width:360px){.logo .lt{width:16px;height:16px;font-size:9px;border-radius:2px}}
 .sub{display:flex;justify-content:center;align-items:center;padding:8px 2px 0;color:var(--muted);font-size:13px;letter-spacing:.4px}
 .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 2px 2px}
-.sbcol{display:flex;flex-direction:column;gap:2px;min-width:46px}
-.sbcol.right{align-items:flex-end}
+.sbcol{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:46px}
+.sbcol.right{align-items:center}
 .sblbl{font-size:10px;font-weight:800;letter-spacing:.9px;color:var(--muted)}
 .sbval{font-size:17px;font-weight:900;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
 .sbcol.lose .sbval{color:var(--bad)}
@@ -81,7 +81,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px;pad
 .pip.lost{background:var(--bad);opacity:.85}
 
 /* ---------- board ---------- */
-main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
+main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto;margin-bottom:auto}
 .board{display:flex;justify-content:center}
 .stack{display:flex;flex-direction:column;gap:10px;justify-content:center;position:relative}
 .brow{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
@@ -201,7 +201,7 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .btnwide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
 .btnwide svg{width:18px;height:18px;flex:none}
 .btnwide.alt{background:var(--panel);color:var(--text);border:1px solid var(--line)}
-.giveup{align-self:center;margin-top:auto;margin-bottom:8px;background:#e23b3b;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;padding:8px 22px;border-radius:10px}
+.giveup{align-self:center;margin-top:8px;margin-bottom:0;background:#e23b3b;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;padding:8px 22px;border-radius:10px}
 .giveup:hover{background:#c92f2f}
 .btnwide:hover{opacity:.92}
 .btnwide:active{transform:translateY(1px)}
@@ -260,8 +260,8 @@ footer code{color:var(--muted)}
     <div class="alpha" id="alpha" aria-hidden="true"></div>
   </main>
 
-  <button class="giveup" id="btnGiveup" type="button">Pes et</button>
   <div id="kb" aria-label="Klavye"></div>
+  <button class="giveup" id="btnGiveup" type="button">Pes et</button>
 
 </div>
 
