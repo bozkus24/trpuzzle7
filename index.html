@@ -81,7 +81,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px;pad
 .pip.lost{background:var(--bad);opacity:.85}
 
 /* ---------- board ---------- */
-main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto;margin-bottom:auto}
+main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .board{display:flex;justify-content:center}
 .stack{display:flex;flex-direction:column;gap:10px;justify-content:center;position:relative}
 .brow{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
@@ -92,7 +92,7 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto;margin-b
 .pct.bot::after{top:-6px;border-bottom-color:var(--accent)}
 .cline{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2 - 1px);width:2px;background:var(--muted);opacity:.5;border-radius:2px;z-index:0}
 .cdot{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2);width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--bg);transform:translate(-50%,-50%);z-index:2;transition:top .4s ease}
-.alpha{display:grid;grid-template-columns:repeat(10,1fr);gap:6px 5px;justify-items:center;align-items:center;max-width:360px;margin:0 auto 8px;padding:0 4px}
+.alpha{display:grid;grid-template-columns:repeat(10,1fr);gap:6px 5px;justify-items:center;align-items:center;max-width:360px;margin:clamp(30px,6vh,64px) auto;padding:0 4px}
 .alpha span{width:clamp(24px,7.2vw,31px);height:clamp(24px,7.2vw,31px);border-radius:50%;display:grid;place-items:center;font-size:clamp(12px,3.4vw,15px);font-weight:700;line-height:1;color:var(--dim);background:var(--panel);border:1px solid var(--line);opacity:.6;transition:color .2s,opacity .2s,background .2s,border-color .2s}
 .alpha span.in{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
 .alpha span.hit{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
@@ -201,7 +201,7 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto;margin-b
 .btnwide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:14px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.3px;background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;transition:opacity .12s}
 .btnwide svg{width:18px;height:18px;flex:none}
 .btnwide.alt{background:var(--panel);color:var(--text);border:1px solid var(--line)}
-.giveup{align-self:center;margin-top:8px;margin-bottom:0;background:#e23b3b;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;padding:8px 22px;border-radius:10px}
+.giveup{align-self:center;margin-top:8px;margin-bottom:auto;background:#e23b3b;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;padding:8px 22px;border-radius:10px}
 .giveup:hover{background:#c92f2f}
 .btnwide:hover{opacity:.92}
 .btnwide:active{transform:translateY(1px)}
@@ -286,6 +286,11 @@ footer code{color:var(--muted)}
 <div class="overlay" id="statsModal" role="dialog" aria-modal="true" aria-label="İstatistikler">
   <div class="modal">
     <div class="mhead"><h2 lang="tr">İstatistikler</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div id="winBox">
+      <div id="winStars"></div>
+      <div id="winMsg"></div>
+      <div id="winWord"></div>
+    </div>
     <div class="statgrid" lang="tr">
       <div class="stat"><b id="stPlayed">0</b><i>Oynanan</i></div>
       <div class="stat"><b id="stWin">0</b><i>Kazanma %</i></div>
@@ -293,14 +298,7 @@ footer code{color:var(--muted)}
       <div class="stat"><b id="stBest">0</b><i>En İyi Seri</i></div>
     </div>
     <p class="dim" style="text-align:center">Ortalama puan: <b id="stAvg">—</b> <span style="opacity:.6">(kazanılan oyunlar)</span></p>
-    <div id="winBox">
-      <div id="winStars"></div>
-      <div id="winMsg"></div>
-      <div id="winWord"></div>
-      <div class="btnrow">
-        <button class="btnwide" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M6 15h-.5A1.5 1.5 0 0 1 4 13.5v-8A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V6"/></svg>Paylaş</button>
-      </div>
-    </div>
+    <button class="btnwide" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M6 15h-.5A1.5 1.5 0 0 1 4 13.5v-8A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V6"/></svg>Paylaş</button>
   </div>
 </div>
 
@@ -743,6 +741,7 @@ function openStats(){
     }
     $("#winWord").textContent=up(secret);
   }else wb.classList.remove("on");
+  var sh=$("#btnShare");if(sh)sh.style.display=done?"":"none";
   $("#statsModal").classList.add("open");
 }
 function shareResult(){
