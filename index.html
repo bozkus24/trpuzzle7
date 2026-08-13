@@ -565,12 +565,12 @@ function render(){
   els.modeLabel.textContent=(mode==="daily")?("Günün Oyunu #"+(dayNo+1)):("Arşiv #"+(dayNo+1)+" · "+fmtDate(dayNo));
   var _gb=$("#btnGiveup");if(_gb)_gb.style.visibility=done?"hidden":"visible";
   renderStatus();
-  tileRow(els.topTiles,topSet?WORDS[lo]:null);
-  tileRow(els.botTiles,botSet?WORDS[hi]:null);
-  els.topTiles.classList.toggle("empty",!topSet);
-  els.botTiles.classList.toggle("empty",!botSet);
-  els.topPct.textContent=topSet?fmtDist(secretIdx-lo):"?";
-  els.botPct.textContent=botSet?fmtDist(hi-secretIdx):"?";
+  tileRow(els.topTiles,topSet?WORDS[lo]:"aaaaa");
+  tileRow(els.botTiles,botSet?WORDS[hi]:"zzzzz");
+  els.topTiles.classList.remove("empty");
+  els.botTiles.classList.remove("empty");
+  els.topPct.textContent=fmtDist(secretIdx-lo);
+  els.botPct.textContent=fmtDist(hi-secretIdx);
   /* sıradaki harf için olası aralık: yazılan önek sınır kelimelerle karşılaştırılır */
   var pos=Math.min(input.length,4);
   var pre=input.slice(0,pos);
@@ -607,7 +607,7 @@ function placeConnector(){
   var lineTop=(tr.bottom-sr.top)+9,lineBot=(br.top-sr.top)-9;
   if(lineBot<lineTop)lineBot=lineTop;
   els.cline.style.top=lineTop+"px";els.cline.style.height=(lineBot-lineTop)+"px";
-  var shown=topSet||botSet;
+  var shown=true;
   els.cdot.style.display=shown?"block":"none";
   if(shown){
     var f=(hi>lo)?(secretIdx-lo)/(hi-lo):0.5;f=Math.max(0,Math.min(1,f));
