@@ -306,7 +306,7 @@ footer code{color:var(--muted)}
 <div class="overlay" id="archiveModal" role="dialog" aria-modal="true" aria-label="Arşiv">
   <div class="modal">
     <div class="mhead"><h2 lang="tr">Arşiv</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <p class="dim">Son 3 ayın günlük bulmacaları. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile işaretlenir.</p>
+    <p class="dim">1 Ağustos'tan bu yana günlük bulmacalar. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile işaretlenir.</p>
     <div class="arclist" id="arclist"></div>
   </div>
 </div>
@@ -679,8 +679,8 @@ function openSettings(){closeModals();syncThemeToggle();applyKb();$("#settingsMo
 function openArchive(){
   closeModals();
   var t=todayNum(),arc=loadArc(),host=$("#arclist");host.innerHTML="";
-  for(var i=0;i<90;i++){
-    var day=t-i;if(day<0)break;
+  var start=Math.round((new Date(2026,7,1)-EPOCH)/864e5);
+  for(var day=t;day>=start&&day>=0;day--){
     host.appendChild(arcRow(day,t,arc[String(day)]));
   }
   $("#archiveModal").classList.add("open");
