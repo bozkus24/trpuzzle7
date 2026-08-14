@@ -184,6 +184,8 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .arcstat{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:800;color:var(--accent);white-space:nowrap}
 .arcstat.ok{color:var(--accent)}
 .arcstat.lose{color:var(--bad)}
+.arcstat.prog{color:var(--muted)}
+.arcstat.prog svg{width:11px;height:11px}
 .setrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 4px;border-bottom:1px solid var(--line)}
 .setrow:last-child{border-bottom:none}
 .setlbl{font-size:15px;font-weight:700;color:var(--text)}
@@ -364,6 +366,7 @@ var els={};
 var SVG_BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9L2.5 12z"/><path d="M15 9.5l-5 5M10 9.5l5 5"/></svg>';
 var SVG_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg>';
 var SVG_X='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+var SVG_PLAY='<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.5v13l11-6.5z"/></svg>';
 var STAR_PATH='M12 2.6l2.85 5.77 6.37 .93-4.61 4.49 1.09 6.35L12 17.6l-5.7 3 1.09-6.35L2.78 9.3l6.37-.93z';
 var SVG_STAR_FILL='<svg class="wstar" viewBox="0 0 24 24" fill="currentColor"><path d="'+STAR_PATH+'"/></svg>';
 var SVG_STAR_OUTLINE='<svg class="wstar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="'+STAR_PATH+'"/></svg>';
@@ -482,14 +485,22 @@ function saveDay(){
   try{var m=loadDays();m[String(dayNo)]={top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed};
     localStorage.setItem(KEY_DAYS,JSON.stringify(m));}catch(e){}
 }
+function stepsForScore(sc){return sc>=5?5:sc>=4?8:sc>=3?11:sc>=2?13:14;}
 function restoreDay(){
   var s=loadDays()[String(dayNo)];
-  if(!s)return;
-  var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
-  if(ti===undefined||bi===undefined||!(ti<bi))return;
-  if(!s.done&&!(ti<secretIdx&&secretIdx<bi))return;
-  lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;gaveUp=!!s.g;countedPlayed=!!s.played;
-  topSet=!!s.ts;botSet=!!s.bs;
+  if(s){
+    var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
+    if(ti!==undefined&&bi!==undefined&&ti<bi&&(s.done||(ti<secretIdx&&secretIdx<bi))){
+      lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;gaveUp=!!s.g;countedPlayed=!!s.played;
+      topSet=!!s.ts;botSet=!!s.bs;return;
+    }
+  }
+  /* tam durum yoksa sonuç kodundan (KEY_ARC) çözülmüş görünümü kur — eski kayıtlar için cevap yine görünür */
+  var code=loadArc()[String(dayNo)];
+  if(code==null)return;
+  done=true;
+  if(code<0){lost=true;steps=MAX_GUESSES;}
+  else{lost=false;steps=stepsForScore(code);}
 }
 
 /* ---------- oyun akışı ---------- */
@@ -737,14 +748,16 @@ function closeModals(){$("#helpModal").classList.remove("open");$("#statsModal")
 function openSettings(){closeModals();syncThemeToggle();applyKb();$("#settingsModal").classList.add("open");}
 function openArchive(){
   closeModals();
-  var t=todayNum(),arc=loadArc(),host=$("#arclist");host.innerHTML="";
+  var t=todayNum(),arc=loadArc(),days=loadDays(),host=$("#arclist");host.innerHTML="";
   var start=Math.round((new Date(2026,7,1)-EPOCH)/864e5);
   for(var day=t;day>=start&&day>=0;day--){
-    host.appendChild(arcRow(day,t,arc[String(day)]));
+    var st=days[String(day)];
+    var inProg=!!(st&&!st.done&&((st.steps|0)>0)); // başlanmış ama bitmemiş
+    host.appendChild(arcRow(day,t,arc[String(day)],inProg));
   }
   $("#archiveModal").classList.add("open");
 }
-function arcRow(day,today,solved){
+function arcRow(day,today,solved,inProg){
   var row=document.createElement("button");
   row.className="arcrow"+(day===today?" today":"");
   var info=document.createElement("div");info.className="arcinfo";
@@ -754,6 +767,7 @@ function arcRow(day,today,solved){
   var stat=document.createElement("div");
   if(solved>0){stat.className="arcstat ok";stat.innerHTML=SVG_CHECK+" "+solved+" puan";}
   else if(solved===-1){stat.className="arcstat lose";stat.innerHTML=SVG_X+" Kayıp";}
+  else if(inProg){stat.className="arcstat prog";stat.innerHTML=SVG_PLAY+" Devam ediyor";}
   else{stat.className="arcstat";stat.textContent="";}
   row.appendChild(info);row.appendChild(stat);
   row.addEventListener("click",function(){startArchive(day);});
