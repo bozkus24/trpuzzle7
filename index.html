@@ -774,7 +774,18 @@ function arcRow(day,today,solved,inProg){
   return row;
 }
 function openHelp(auto){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();var d=document.querySelector(".dontshow-sep");if(d)d.style.display=auto?"":"none";$("#helpModal").classList.add("open");}
-function openStats(){
+/* stats modalında gösterilen sonuç (paylaşım da bunu kullanır) */
+var statsShown=null;
+function dailyResult(){
+  var dNo=todayNum(),dSecret=WORDS[secretForDay(dNo)];
+  if(mode==="daily")return {done:done,lost:lost,gaveUp:gaveUp,steps:steps,secret:dSecret,mode:"daily",dayNo:dNo};
+  var st=loadDays()[String(dNo)];
+  if(st&&st.done)return {done:true,lost:!!st.lost,gaveUp:!!st.g,steps:st.steps|0,secret:dSecret,mode:"daily",dayNo:dNo};
+  var code=loadArc()[String(dNo)];
+  if(code!=null)return {done:true,lost:code<0,gaveUp:false,steps:(code<0)?MAX_GUESSES:stepsForScore(code),secret:dSecret,mode:"daily",dayNo:dNo};
+  return {done:false,secret:dSecret,mode:"daily",dayNo:dNo};
+}
+function openStats(daily){
   closeModals();
   var s=loadStats();
   $("#stPlayed").textContent=s.played;
@@ -782,28 +793,32 @@ function openStats(){
   $("#stStreak").textContent=s.streak;
   $("#stBest").textContent=s.best;
   $("#stAvg").textContent=s.wins?(s.totalScore/s.wins).toFixed(1):"—";
+  /* düğmeden açılınca daima GÜNLÜK sonucu; oyun bitince otomatik açılınca o oyunun sonucu */
+  var r=daily?dailyResult():{done:done,lost:lost,gaveUp:gaveUp,steps:steps,secret:secret,mode:mode,dayNo:dayNo};
+  statsShown=r;
   var wb=$("#winBox");
-  if(done){
+  if(r.done){
     wb.classList.add("on");
-    wb.classList.toggle("lostbox",lost);
-    if(lost){
+    wb.classList.toggle("lostbox",r.lost);
+    if(r.lost){
       $("#winStars").innerHTML=SVG_STAR_OUTLINE.repeat(5);
-      $("#winMsg").innerHTML=gaveUp?"Pes ettin. Gizli kelime:":"14 tahminde bulamadın. Gizli kelime:";
+      $("#winMsg").innerHTML=r.gaveUp?"Pes ettin. Gizli kelime:":"14 tahminde bulamadın. Gizli kelime:";
     }else{
-      var score=scoreForGuess(steps);
+      var score=scoreForGuess(r.steps);
       $("#winStars").innerHTML=SVG_STAR_FILL.repeat(score)+SVG_STAR_OUTLINE.repeat(5-score);
-      $("#winMsg").innerHTML="Gizli kelimeyi <b>"+steps+".</b> tahminde buldun · <b>"+score+" puan</b>";
+      $("#winMsg").innerHTML="Gizli kelimeyi <b>"+r.steps+".</b> tahminde buldun · <b>"+score+" puan</b>";
     }
-    $("#winWord").textContent=up(secret);
+    $("#winWord").textContent=up(r.secret);
   }else wb.classList.remove("on");
-  var sh=$("#btnShare");if(sh)sh.style.display=done?"":"none";
+  var sh=$("#btnShare");if(sh)sh.style.display=r.done?"":"none";
   $("#statsModal").classList.add("open");
 }
 function shareResult(){
-  var head=(mode==="daily")?("Arala #"+(dayNo+1)):("Arala Arşiv #"+(dayNo+1));
+  var r=statsShown||{lost:lost,steps:steps,mode:mode,dayNo:dayNo};
+  var head=(r.mode==="daily")?("Arala #"+(r.dayNo+1)):("Arala Arşiv #"+(r.dayNo+1));
   var txt;
-  if(lost){txt=head+" — Kaybettim (0 puan)\n14 tahminde bulamadım.";}
-  else{var score=scoreForGuess(steps);txt=head+" — "+score+"/5 puan\nGizli kelimeyi "+steps+". tahminde buldum.";}
+  if(r.lost){txt=head+" — Kaybettim (0 puan)\n14 tahminde bulamadım.";}
+  else{var score=scoreForGuess(r.steps);txt=head+" — "+score+"/5 puan\nGizli kelimeyi "+r.steps+". tahminde buldum.";}
   function fallback(){
     var ta=document.createElement("textarea");ta.value=txt;
     document.body.appendChild(ta);ta.select();
@@ -834,7 +849,7 @@ function bindUI(){
     if(/^[A-Za-zÇĞİÖŞÜçğıiöşü]$/.test(e.key))handleKey(low(e.key));
   });
   $("#btnHelp").addEventListener("click",function(){openHelp(false);});
-  $("#btnStats").addEventListener("click",function(){openStats();});
+  $("#btnStats").addEventListener("click",function(){openStats(true);});
   $("#btnFree").addEventListener("click",openArchive);
   
   $("#btnShare").addEventListener("click",shareResult);
