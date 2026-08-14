@@ -350,7 +350,7 @@ function cmp(a,b){
 var WORDS=[],WIDX=new Map(),SET=new Set(),N=0,ANSWERS=[];
 var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,gaveUp=false,input="",animating=false;
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
-var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v2";
+var KEY_DAY="aradle_day_v1",KEY_DAYS="aradle_days_v2",KEY_STATS="aradle_stats_v2";
 var EPOCH=new Date(2026,0,1);
 var MAX_GUESSES=14;
 /* Puan kademeleri: ilk 5 tahmin 5 puan, 6-8 → 4, 9-11 → 3, 12-13 → 2, 14 → 1 (nokta grupları 5-3-3-2-1) */
@@ -467,14 +467,24 @@ function loadStats(){
   return {played:0,wins:0,totalScore:0,streak:0,best:0,lastWinDay:null};
 }
 function saveStats(s){try{localStorage.setItem(KEY_STATS,JSON.stringify(s));}catch(e){}}
+function loadDays(){
+  var m={};
+  try{var o=JSON.parse(localStorage.getItem(KEY_DAYS));if(o&&typeof o==="object")m=o;}catch(e){}
+  /* eski tekil formattan (aradle_day_v1) bir defalık taşı */
+  try{var old=JSON.parse(localStorage.getItem(KEY_DAY));
+    if(old&&typeof old==="object"&&typeof old.day==="number"&&m[String(old.day)]==null){
+      m[String(old.day)]={top:old.top,bot:old.bot,ts:old.ts,bs:old.bs,steps:old.steps,done:old.done,lost:old.lost,g:old.g,played:old.played};
+    }}catch(e){}
+  return m;
+}
 function saveDay(){
-  if(mode!=="daily")return;
-  try{localStorage.setItem(KEY_DAY,JSON.stringify({day:dayNo,top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed}));}catch(e){}
+  /* her gün (günlük + arşiv) kendi ilerlemesiyle kaydedilir */
+  try{var m=loadDays();m[String(dayNo)]={top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed};
+    localStorage.setItem(KEY_DAYS,JSON.stringify(m));}catch(e){}
 }
 function restoreDay(){
-  var s=null;
-  try{s=JSON.parse(localStorage.getItem(KEY_DAY));}catch(e){}
-  if(!s||s.day!==dayNo)return;
+  var s=loadDays()[String(dayNo)];
+  if(!s)return;
   var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
   if(ti===undefined||bi===undefined||!(ti<bi))return;
   if(!s.done&&!(ti<secretIdx&&secretIdx<bi))return;
@@ -494,7 +504,8 @@ function startArchive(day){
   resetGuessAnim();
   mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
   lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=true;
-  closeModals();render();toastMsg("Arşiv oyunu · "+fmtDate(day));
+  restoreDay();
+  closeModals();render();toastMsg(done?("Arşiv · "+fmtDate(day)+" · çözülmüş"):("Arşiv oyunu · "+fmtDate(day)));
 }
 function ensurePlayed(){
   if(mode!=="daily"||countedPlayed)return;
