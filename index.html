@@ -101,29 +101,27 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .bound .tile{background:var(--tile);color:var(--tile-ink)}
 .tiles.ph .tile{color:rgba(255,255,255,.62)}
 .tiles.empty .tile{background:var(--panel);border:2px dashed var(--line);box-shadow:none;color:transparent}
-.guess .tile{background:var(--panel);border:2px dashed var(--line);color:var(--text);position:relative;transition:border-color .15s}
-.guess .tile.filled{border-style:solid;border-color:var(--accent)}
+.guess .tile{background:var(--panel);border:2px dashed var(--line);color:var(--text);position:relative;transition:background .18s,border-color .15s,color .18s}
+.guess .tile.filled{border-style:solid;border-color:#ef9d63;background:#ffb38a;color:#5c2b0e}
 .guess .tile.next{border-color:var(--accent)}
 .guess.oob .tile.filled{border-color:var(--bad)}
-.guess .tile:not(.filled)::before{content:"•";color:var(--dim);font-size:.8em}
+.guess .tile::before{content:none}
+.guess .tile.next::before{content:"•";color:var(--dim);font-size:.5em;opacity:.5;line-height:1}
+.guess.sweep .tile{background:var(--tile);border-color:transparent;color:var(--tile-ink);transition:background .24s ease,color .24s ease,border-color .24s ease}
+.guess.sweep .tile:nth-child(1){transition-delay:0s}
+.guess.sweep .tile:nth-child(2){transition-delay:.11s}
+.guess.sweep .tile:nth-child(3){transition-delay:.22s}
+.guess.sweep .tile:nth-child(4){transition-delay:.33s}
+.guess.sweep .tile:nth-child(5){transition-delay:.44s}
+.guess.sweep .tile::before{content:none}
+.guess.slide{transition:transform .55s cubic-bezier(.45,.05,.25,1)}
 .guess.win .tile{background:var(--ok);border:none;color:var(--ok-ink);animation:pop .5s both}
 .guess.lost .tile{background:var(--bad-bg);border:2px solid var(--bad);color:var(--bad-ink);box-shadow:none;animation:pop .4s both}
-.guess.lost .tile::before{content:none}
-.guess.win .tile::before{content:none}
 .guess.win .tile:nth-child(2){animation-delay:.07s}.guess.win .tile:nth-child(3){animation-delay:.14s}
 .guess.win .tile:nth-child(4){animation-delay:.21s}.guess.win .tile:nth-child(5){animation-delay:.28s}
 .shake{animation:shake .45s}
-.land .tile{animation:land .38s ease both}
-.land .tile:nth-child(2){animation-delay:.09s}
-.land .tile:nth-child(3){animation-delay:.18s}
-.land .tile:nth-child(4){animation-delay:.27s}
-.land .tile:nth-child(5){animation-delay:.36s}
 @keyframes pop{0%{transform:scale(.6);opacity:.2}60%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
 @keyframes shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
-@keyframes land{
-  0%{transform:translateY(var(--fly,0px));opacity:.15}
-  100%{transform:translateY(0);opacity:1}
-}
 
 /* ---------- keyboard ---------- */
 #kb{display:flex;flex-direction:column;gap:6px;padding:0 0 6px}
@@ -350,7 +348,7 @@ function cmp(a,b){
 
 /* ---------- durum ---------- */
 var WORDS=[],WIDX=new Map(),SET=new Set(),N=0,ANSWERS=[];
-var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,gaveUp=false,input="";
+var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,gaveUp=false,input="",animating=false;
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
 var KEY_DAY="aradle_day_v1",KEY_STATS="aradle_stats_v2";
 var EPOCH=new Date(2026,0,1);
@@ -486,12 +484,14 @@ function restoreDay(){
 
 /* ---------- oyun akışı ---------- */
 function startDaily(){
+  resetGuessAnim();
   mode="daily";dayNo=todayNum();secretIdx=secretForDay(dayNo);secret=WORDS[secretIdx];
   lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=false;
   restoreDay();render();
 }
 function startArchive(day){
   if(day===todayNum()){startDaily();return;}
+  resetGuessAnim();
   mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
   lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=true;
   closeModals();render();toastMsg("Arşiv oyunu · "+fmtDate(day));
@@ -503,8 +503,8 @@ function ensurePlayed(){
 function closeness(i){return Math.max(1,Math.round(100*(1-Math.abs(secretIdx-i)/(N-1))));}
 function fmtDist(d){return "%"+(Math.abs(d)/(N-1)*100).toFixed(1);}
 
-function submitGuess(){
-  if(!ready||done)return;
+function submitGuess(instant){
+  if(!ready||done||animating)return;
   if(input.length<5){toastMsg("5 harf girmelisin");shake();return;}
   var w=input;
   if(!SET.has(w)){toastMsg("Kelime havuzunda yok");shake();return;}
@@ -513,11 +513,24 @@ function submitGuess(){
   if(gi<=lo){toastMsg("Sözlükte "+up(WORDS[lo])+" kelimesinden sonra gelen bir kelime girin ▼");shake();return;}
   if(gi>=hi){toastMsg("Sözlükte "+up(WORDS[hi])+" kelimesinden önce gelen bir kelime girin ▲");shake();return;}
   steps++;ensurePlayed();
-  if(cmp(w,secret)<0){lo=gi;topSet=true;flip("top");}
-  else{hi=gi;botSet=true;flip("bot");}
-  input="";
-  if(steps>=MAX_GUESSES){loseGame();return;}
-  render();saveDay();
+  var toTop=cmp(w,secret)<0;
+  if(toTop){lo=gi;topSet=true;}else{hi=gi;botSet=true;}
+  if(instant){
+    input="";
+    if(steps>=MAX_GUESSES){loseGame();return;}
+    render();saveDay();return;
+  }
+  // Girilen kelime satırı: önce soldan sağa maviye döner, sonra sınıra kayar
+  render(); // rozet/alfabe/bağlantı anında güncellenir; tahmin satırı hâlâ kelimeyi (şeftali) gösterir
+  if(steps<MAX_GUESSES)saveDay(); // animasyon ortasında yenilenirse tahmin kaybolmasın
+  var boundRow=toTop?els.topTiles:els.botTiles;
+  boundRow.style.visibility="hidden"; // hedef satır kayış bitince görünür olur
+  runGuessAnim(toTop?"top":"bot",function(){
+    boundRow.style.visibility="";
+    input="";
+    if(steps>=MAX_GUESSES){loseGame();return;}
+    render();saveDay();
+  });
 }
 function winGame(){
   done=true;input="";
@@ -640,16 +653,33 @@ function shake(){
   void els.guessWrap.offsetWidth;
   els.guessWrap.classList.add("shake");
 }
-function flip(which){
-  /* tahmin satırından sınır satırına uçuş mesafesi; render satır konumlarını değiştirmez */
-  var row=(which==="top")?els.topTiles:els.botTiles;
-  var fly=els.guessTiles.getBoundingClientRect().top-row.getBoundingClientRect().top;
-  row.style.setProperty("--fly",fly+"px");
-  row.classList.remove("land");
-  void row.offsetWidth;
-  row.classList.add("land");
-  clearTimeout(row._landT);
-  row._landT=setTimeout(function(){row.classList.remove("land");},950);
+var SWEEP_MS=700,SLIDE_MS=580;
+function runGuessAnim(which,cb){
+  animating=true;
+  var g=els.guessTiles;
+  clearTimeout(g._t1);clearTimeout(g._t2);
+  void g.offsetWidth;            // mevcut (şeftali) durumu sabitle
+  g.classList.add("sweep");      // soldan sağa maviye dön
+  g._t1=setTimeout(function(){
+    var boundRow=(which==="top")?els.topTiles:els.botTiles;
+    var fly=boundRow.getBoundingClientRect().top-g.getBoundingClientRect().top;
+    g.classList.add("slide");
+    void g.offsetWidth;
+    g.style.transform="translateY("+fly+"px)"; // sınır satırına kay
+    g._t2=setTimeout(function(){
+      g.classList.remove("sweep","slide");
+      g.style.transition="";g.style.transform="";
+      animating=false;
+      cb();
+    },SLIDE_MS);
+  },SWEEP_MS);
+}
+function resetGuessAnim(){
+  animating=false;
+  var g=els.guessTiles;
+  if(g){clearTimeout(g._t1);clearTimeout(g._t2);g.classList.remove("sweep","slide");g.style.transition="";g.style.transform="";}
+  if(els.topTiles)els.topTiles.style.visibility="";
+  if(els.botTiles)els.botTiles.style.visibility="";
 }
 var toastTimer=null;
 function toastMsg(m){
@@ -684,7 +714,7 @@ function buildKeyboard(){
   });
 }
 function handleKey(k){
-  if(!ready||done)return;
+  if(!ready||done||animating)return;
   if(k==="ENTER"){submitGuess();return;}
   if(k==="BACK"){input=input.slice(0,-1);render();return;}
   if(IDX.has(k)&&input.length<5){input+=k;render();}
@@ -817,7 +847,7 @@ document.addEventListener("DOMContentLoaded",function(){
   if(new URLSearchParams(location.search).has("debug")){
     window.__aradle={
       state:function(){return {N:N,answers:ANSWERS.length,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,lost:lost,score:(done&&!lost)?scoreForGuess(steps):(lost?0:scoreForGuess(steps+1)),mode:mode,today:todayNum(),words:WORDS,inAnswers:ANSWERS.indexOf(secret)>=0};},
-      guess:function(w){input=low(w);submitGuess();},
+      guess:function(w){input=low(w);submitGuess(true);},
       archive:function(day){startArchive(day);},
       daily:startDaily,
       openArchive:openArchive
