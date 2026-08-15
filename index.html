@@ -154,6 +154,15 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 4px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
 .stat b{display:block;font-size:22px;color:var(--text);font-variant-numeric:tabular-nums}
+.disthead{font-size:11.5px;font-weight:800;letter-spacing:.14em;color:var(--muted);margin:16px 2px 9px}
+.distrows{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.distrow{display:flex;align-items:center;gap:9px}
+.distnum{flex:none;width:42px;font-weight:800;font-size:14px;color:var(--text);display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
+.distnum .coin{font-size:13px;line-height:1}
+.distbar{flex:1;min-width:0;display:flex}
+.distfill{display:inline-flex;align-items:center;justify-content:flex-end;min-width:24px;height:25px;border-radius:6px;background:#7f8591;color:#fff;padding:0 9px;box-sizing:border-box;transition:width .35s ease}
+.distfill b{font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums}
+.distfill.on{background:var(--ok)}
 .stat i{font-style:normal;font-size:10.5px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
 #winBox{display:none;text-align:center;margin-top:14px;padding:16px 12px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
 #winBox.on{display:block}
@@ -298,6 +307,8 @@ footer code{color:var(--muted)}
       <div class="stat"><b id="stBest">0</b><i>En İyi Seri</i></div>
     </div>
     <p class="dim" style="text-align:center">Ortalama puan: <b id="stAvg">—</b> <span style="opacity:.6">(kazanılan oyunlar)</span></p>
+    <div class="disthead">PUAN DAĞILIMI</div>
+    <div class="distrows" id="distRows"></div>
     <button class="btnwide" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M6 15h-.5A1.5 1.5 0 0 1 4 13.5v-8A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V6"/></svg>Paylaş</button>
   </div>
 </div>
@@ -463,11 +474,21 @@ function markResult(day,code){try{var o=loadArc();var k=String(day);var prev=o[k
   localStorage.setItem(KEY_ARC,JSON.stringify(o));}catch(e){}}
 
 /* ---------- kalıcılık ---------- */
+function reconDist(played,wins,total){
+  /* eski kayıtlar için puan dağılımını yaklaşık kur (kayıplar kesin, kazançlar ortalama banda) */
+  var d=[0,0,0,0,0,0];
+  d[0]=Math.max(0,played-wins);
+  if(wins>0)d[Math.max(1,Math.min(5,Math.round(total/wins)))]=wins;
+  return d;
+}
 function loadStats(){
   try{var s=JSON.parse(localStorage.getItem(KEY_STATS));
-    if(s&&typeof s==="object")return {played:s.played|0,wins:s.wins|0,totalScore:s.totalScore|0,streak:s.streak|0,best:s.best|0,lastWinDay:(typeof s.lastWinDay==="number")?s.lastWinDay:null};
+    if(s&&typeof s==="object"){
+      var d=(s.dist&&s.dist.length===6)?s.dist.map(function(x){return x|0;}):reconDist(s.played|0,s.wins|0,s.totalScore|0);
+      return {played:s.played|0,wins:s.wins|0,totalScore:s.totalScore|0,streak:s.streak|0,best:s.best|0,lastWinDay:(typeof s.lastWinDay==="number")?s.lastWinDay:null,dist:d};
+    }
   }catch(e){}
-  return {played:0,wins:0,totalScore:0,streak:0,best:0,lastWinDay:null};
+  return {played:0,wins:0,totalScore:0,streak:0,best:0,lastWinDay:null,dist:[0,0,0,0,0,0]};
 }
 function saveStats(s){try{localStorage.setItem(KEY_STATS,JSON.stringify(s));}catch(e){}}
 function loadDays(){
@@ -560,7 +581,7 @@ function winGame(){
   markResult(dayNo,score);
   if(mode==="daily"){
     var s=loadStats();
-    s.wins++;s.totalScore+=score;
+    s.wins++;s.totalScore+=score;s.dist[score]++;
     s.streak=(s.lastWinDay===dayNo-1)?s.streak+1:1;
     if(s.streak>s.best)s.best=s.streak;
     s.lastWinDay=dayNo;saveStats(s);
@@ -571,7 +592,7 @@ function winGame(){
 function loseGame(){
   done=true;lost=true;input="";
   markResult(dayNo,-1);
-  if(mode==="daily"){var s=loadStats();s.streak=0;saveStats(s);}
+  if(mode==="daily"){var s=loadStats();s.streak=0;s.dist[0]++;saveStats(s);}
   render();saveDay();toastMsg("Kaybettin!");
   setTimeout(function(){openStats();},1300);
 }
@@ -581,7 +602,7 @@ function giveUp(){
   closeModals();ensurePlayed();
   gaveUp=true;done=true;lost=true;input="";
   markResult(dayNo,-1);
-  if(mode==="daily"){var s=loadStats();s.streak=0;saveStats(s);}
+  if(mode==="daily"){var s=loadStats();s.streak=0;s.dist[0]++;saveStats(s);}
   render();saveDay();toastMsg("Pes ettin! Kelime: "+up(secret));
   setTimeout(function(){openStats();},1300);
 }
@@ -796,6 +817,15 @@ function openStats(daily){
   /* düğmeden açılınca daima GÜNLÜK sonucu; oyun bitince otomatik açılınca o oyunun sonucu */
   var r=daily?dailyResult():{done:done,lost:lost,gaveUp:gaveUp,steps:steps,secret:secret,mode:mode,dayNo:dayNo};
   statsShown=r;
+  /* puan dağılımı (0-5); gösterilen sonucun bandı yeşil vurgulanır */
+  var hi=r.done?(r.lost?0:scoreForGuess(r.steps)):-1,dmax=1;
+  for(var di=0;di<6;di++)dmax=Math.max(dmax,s.dist[di]|0);
+  var dh="";
+  for(var sc=5;sc>=0;sc--){
+    var c=s.dist[sc]|0,w=Math.max(14,Math.round(c/dmax*100));
+    dh+='<div class="distrow"><span class="distnum">'+sc+' <span class="coin">🪙</span></span><div class="distbar"><span class="distfill'+(sc===hi?" on":"")+'" style="width:'+w+'%"><b>'+c+'</b></span></div></div>';
+  }
+  $("#distRows").innerHTML=dh;
   var wb=$("#winBox");
   if(r.done){
     wb.classList.add("on");
