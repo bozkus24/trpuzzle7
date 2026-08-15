@@ -93,9 +93,9 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .cline{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2 - 1px);width:2px;background:var(--muted);opacity:.5;border-radius:2px;z-index:0}
 .cdot{position:absolute;left:calc(clamp(44px,11.5vw,54px)/2);width:13px;height:13px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--bg);transform:translate(-50%,-50%);z-index:2;transition:top .4s ease}
 .alpha{display:grid;grid-template-columns:repeat(10,1fr);gap:6px 5px;justify-items:center;align-items:center;max-width:360px;margin:clamp(30px,6vh,64px) auto;padding:0 4px}
-.alpha span{width:clamp(24px,7.2vw,31px);height:clamp(24px,7.2vw,31px);border-radius:50%;display:grid;place-items:center;font-size:clamp(12px,3.4vw,15px);font-weight:700;line-height:1;color:var(--dim);background:var(--panel);border:1px solid var(--line);opacity:.6;transition:color .2s,opacity .2s,background .2s,border-color .2s}
-.alpha span.in{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
-.alpha span.hit{color:var(--accent-ink);background:var(--accent);border-color:transparent;opacity:1}
+.alpha span{width:clamp(24px,7.2vw,31px);height:clamp(24px,7.2vw,31px);border-radius:50%;display:grid;place-items:center;font-size:clamp(12px,3.4vw,15px);font-weight:700;line-height:1;color:#e9edf3;background:#5b6472;border:1px solid transparent;opacity:.9;transition:color .2s,opacity .2s,background .2s,border-color .2s}
+.alpha span.in{color:#1b1e25;background:#eef1f6;border-color:#cbd3de;opacity:1}
+.alpha span.hit{color:#fff;background:var(--ok);border-color:transparent;opacity:1}
 .tiles{display:flex;gap:7px;justify-content:center}
 .tile{width:clamp(40px,11.6vw,52px);aspect-ratio:1;display:grid;place-items:center;font-size:clamp(19px,5.6vw,25px);font-weight:800;border-radius:2px}
 .bound .tile{background:var(--tile);color:var(--tile-ink)}
@@ -365,6 +365,8 @@ var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,gaveUp=false,
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
 var KEY_DAY="aradle_day_v1",KEY_DAYS="aradle_days_v2",KEY_STATS="aradle_stats_v2";
 var EPOCH=new Date(2026,0,1);
+var LAUNCH=Math.round((new Date(2026,7,1)-EPOCH)/864e5); /* 1 Ağustos 2026 = 1. bulmaca */
+function puzzleNo(day){return day-LAUNCH+1;}
 var MAX_GUESSES=14;
 /* Puan kademeleri: ilk 5 tahmin 5 puan, 6-8 → 4, 9-11 → 3, 12-13 → 2, 14 → 1 (nokta grupları 5-3-3-2-1) */
 function scoreForGuess(n){if(n<=5)return 5;if(n<=8)return 4;if(n<=11)return 3;if(n<=13)return 2;if(n<=14)return 1;return 0;}
@@ -782,7 +784,7 @@ function arcRow(day,today,solved,inProg){
   var row=document.createElement("button");
   row.className="arcrow"+(day===today?" today":"");
   var info=document.createElement("div");info.className="arcinfo";
-  var num=document.createElement("b");num.textContent="#"+(day+1)+(day===today?" · Bugün":"");
+  var num=document.createElement("b");num.textContent="#"+puzzleNo(day)+(day===today?" · Bugün":"");
   var dt=document.createElement("span");dt.textContent=fmtDate(day);
   info.appendChild(num);info.appendChild(dt);
   var stat=document.createElement("div");
@@ -845,7 +847,7 @@ function openStats(daily){
 }
 function shareResult(){
   var r=statsShown||{lost:lost,steps:steps,mode:mode,dayNo:dayNo};
-  var head=(r.mode==="daily")?("Arala #"+(r.dayNo+1)):("Arala Arşiv #"+(r.dayNo+1));
+  var head=(r.mode==="daily")?("Arala #"+puzzleNo(r.dayNo)):("Arala Arşiv #"+puzzleNo(r.dayNo));
   var txt;
   if(r.lost){txt=head+" — Kaybettim (0 puan)\n14 tahminde bulamadım.";}
   else{var score=scoreForGuess(r.steps);txt=head+" — "+score+"/5 puan\nGizli kelimeyi "+r.steps+". tahminde buldum.";}
