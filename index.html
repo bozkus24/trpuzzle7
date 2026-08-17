@@ -158,7 +158,7 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .distrows{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
 .distrow{display:flex;align-items:center;gap:9px}
 .distnum{flex:none;width:42px;font-weight:800;font-size:14px;color:var(--text);display:inline-flex;align-items:center;gap:4px;font-variant-numeric:tabular-nums}
-.distnum .coin{font-size:13px;line-height:1}
+.distnum .dstar{width:15px;height:15px;flex:none}
 .distbar{flex:1;min-width:0;display:flex}
 .distfill{display:inline-flex;align-items:center;justify-content:flex-end;min-width:24px;height:25px;border-radius:6px;background:#7f8591;color:#fff;padding:0 9px;box-sizing:border-box;transition:width .35s ease}
 .distfill b{font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums}
@@ -825,7 +825,7 @@ function openStats(daily){
   var dh="";
   for(var sc=5;sc>=0;sc--){
     var c=s.dist[sc]|0,w=Math.max(14,Math.round(c/dmax*100));
-    dh+='<div class="distrow"><span class="distnum">'+sc+' <span class="coin">🪙</span></span><div class="distbar"><span class="distfill'+(sc===hi?" on":"")+'" style="width:'+w+'%"><b>'+c+'</b></span></div></div>';
+    dh+='<div class="distrow"><span class="distnum">'+sc+' <svg class="dstar" viewBox="0 0 24 24" fill="#f5b940" aria-hidden="true"><path d="'+STAR_PATH+'"/></svg></span><div class="distbar"><span class="distfill'+(sc===hi?" on":"")+'" style="width:'+w+'%"><b>'+c+'</b></span></div></div>';
   }
   $("#distRows").innerHTML=dh;
   var wb=$("#winBox");
