@@ -139,9 +139,9 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto}
 .overlay{position:fixed;inset:0;background:var(--scrim);display:none;place-items:center;z-index:50;padding:16px}
 .overlay.open{display:grid}
 .modal{background:var(--bg2);border:1px solid var(--line);border-radius:16px;max-width:440px;width:100%;padding:20px 22px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.mhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.mhead h2{font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent)}
-.x{font-size:20px;color:var(--muted);width:34px;height:34px;border-radius:8px;display:grid;place-items:center}
+.mhead{position:relative;display:flex;justify-content:center;align-items:center;min-height:34px;margin-bottom:12px}
+.mhead h2{font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);text-align:center}
+.x{position:absolute;top:-4px;right:-4px;font-size:20px;color:var(--muted);width:34px;height:34px;border-radius:8px;display:grid;place-items:center}
 .x:hover{background:var(--panel)}
 .modal p{font-size:14px;line-height:1.55;color:var(--text);margin:8px 0}
 .modal p.dim{color:var(--muted);font-size:13px}
@@ -278,7 +278,7 @@ footer code{color:var(--muted)}
 
 <div class="overlay" id="helpModal" role="dialog" aria-modal="true" aria-label="Nasıl oynanır">
   <div class="modal">
-    <div class="mhead"><h2 lang="tr">Nasıl Oynanır?</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="mhead"><h2 lang="tr">Nasıl Oynanır</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <p><b>Oyunun amacı</b>, alfabetik sıralamadan yardım alarak gizli 5 harfli kelimeyi bulmaktır. Kelime, <b>üst</b> ve <b>alt</b> sınırın arasındadır.</p>
     <div class="mini">
       <div class="minirow"><span>K</span><span>A</span><span>V</span><span>U</span><span>N</span></div>
