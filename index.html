@@ -7,6 +7,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Arala — Türkçe kelime bulmacası. Gizli 5 harfli kelime, alfabetik olarak üstteki ve alttaki kelimenin arasında. Aralığı daralt, kelimeyi bul!">
 <title>Arala — Aradaki Kelimeyi Bul</title>
+<link rel="canonical" href="https://trpuzzle.com/arala/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TrPuzzle">
+<meta property="og:title" content="Arala — Aradaki Kelimeyi Bul">
+<meta property="og:description" content="Gizli beş harfli kelime, alfabetik olarak üstteki ve alttaki kelimenin arasında. Aralığı daralt, kelimeyi bul!">
+<meta property="og:url" content="https://trpuzzle.com/arala/">
+<meta property="og:image" content="https://trpuzzle.com/arala/logo.png">
+<meta name="twitter:card" content="summary">
 <style>
 :root{
   /* AYDINLIK (beyaz) tema — varsayılan */
@@ -221,6 +229,10 @@ footer code{color:var(--muted)}
 #fatal b{color:var(--bad)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
+}
+/* Masaüstünde "Nasıl oynanır" penceresi biraz daha geniş (mobil aynı kalır) */
+@media (min-width: 760px) {
+  #helpModal .modal { max-width: 600px; }
 }
 </style>
 <!--AR-HEAD-END-->
@@ -929,5 +941,40 @@ document.addEventListener("DOMContentLoaded",function(){
 })();
 </script>
 <!--AR-BODY-END-->
+
+<section class="tp-bilgi" id="bilgi">
+  <h1>Arala: alfabetik aralığı daraltarak kelimeyi bulma oyunu</h1>
+  <p>Arala'da gizli <strong>beş harfli Türkçe kelime</strong>, ekrandaki üst ve alt kelimenin <strong>alfabetik olarak arasında</strong> bir yerdedir. Her tahminin, sözlükteki bu aralığı yukarıdan ya da aşağıdan daraltır; kelimeyi köşeye sıkıştırıp yakalamak sana kalmış. Sözlük sırası sezgisi ile kelime bilgisini aynı anda çalıştıran, türünün Türkçedeki ilk örneklerinden bir bulmacadır.</p>
+  <h2>Nasıl oynanır?</h2>
+  <p>Beş harfli bir kelime tahmin et. Tahminin gizli kelimeden alfabetik olarak <em>önce</em> geliyorsa yeni alt sınırın, <em>sonra</em> geliyorsa yeni üst sınırın olur. Aralık her tahminle daralır; gizli kelimeyi bulduğunda oyun biter. Ne kadar az tahminle bulursan istatistiklerin o kadar parlar.</p>
+  <h2>Strateji ipuçları</h2>
+  <ul>
+    <li><strong>Ortadan böl:</strong> En hızlı daraltma, aralığın alfabetik ortasına tahmin atmaktır — ikili arama (binary search) mantığı burada birebir işler.</li>
+    <li><strong>İlk harfi kilitle:</strong> Sınırların ilk harfleri aynılaştığında (ör. ikisi de "k" ile başlıyorsa) dikkatini ikinci harfe kaydır; oyun artık o harfin içinde dönüyordur.</li>
+    <li><strong>Sözlük dağılımını bil:</strong> Türkçe sözlükte k, s, t ve b ile başlayan kelimeler kalabalık, j ve ğ neredeyse boştur — orta noktayı tahmin ederken bunu hesaba kat.</li>
+    <li><strong>Sınırlara yaslanma:</strong> Sınıra çok yakın tahminler (ör. alt sınırın hemen ardından gelen kelime) aralığı kıl payı daraltır; cesur ol, ortaya oyna.</li>
+  </ul>
+  <h2>Sık sorulan sorular</h2>
+  <p><strong>Yeni bulmaca ne zaman?</strong> Her gün Türkiye saatiyle 00.00'da yenilenir; geçmiş günleri Arşiv'den oynayabilirsin.</p>
+  <p><strong>Verilerim nereye gidiyor?</strong> Hiçbir yere — ilerleme ve istatistikler yalnızca kendi tarayıcında tutulur; oyun hesap istemez.</p>
+</section>
+
+<footer class="tp-footer">
+  Bir <a href="https://trpuzzle.com/">TrPuzzle</a> oyunu — sekiz günlük Türkçe bulmacanın tamamını keşfet.<br>
+  <a href="https://trpuzzle.com/">Anasayfa</a> · <a href="https://trpuzzle.com/hakkinda.html">Hakkında</a> · <a href="https://trpuzzle.com/gizlilik.html">Gizlilik</a> · <a href="https://trpuzzle.com/kosullar.html">Koşullar</a>
+</footer>
+<style>
+/* ── TrPuzzle bilgi bölümü ve mini footer ── */
+.tp-bilgi{max-width:640px;margin:3rem auto 0;padding:1.75rem 1.4rem .5rem;border-top:1px solid rgba(128,128,128,.35);line-height:1.65;font-size:.95rem;text-align:left}
+.tp-bilgi h1{font-size:1.35rem;line-height:1.3;margin:0 0 .5em}
+.tp-bilgi h2{font-size:1.08rem;line-height:1.3;margin:1.5em 0 .5em}
+.tp-bilgi p{margin:.6em 0}
+.tp-bilgi ul{margin:.6em 0;padding-left:1.35rem}
+.tp-bilgi li{margin:.35em 0}
+.tp-bilgi details{margin:.5em 0}
+.tp-bilgi summary{cursor:pointer;font-weight:600}
+.tp-footer{max-width:640px;margin:0 auto;padding:1.25rem 1.4rem 2rem;font-size:.8rem;opacity:.72;text-align:center;line-height:1.7}
+.tp-footer a{color:inherit}
+</style>
 </body>
 </html>
