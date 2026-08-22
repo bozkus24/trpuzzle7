@@ -283,7 +283,6 @@ footer code{color:var(--muted)}
 
   <div class="alpha" id="alpha" aria-hidden="true"></div>
   <div id="kb" aria-label="Klavye"></div>
-  <button class="giveup" id="btnGiveup" type="button">Pes et</button>
 
 </div>
 
@@ -901,7 +900,6 @@ function bindUI(){
   $("#btnSettings").addEventListener("click",openSettings);
   $("#selTheme").addEventListener("change",function(){setTheme(this.value);});
   $("#tgKb").addEventListener("click",function(){setKb(!kbEnabled());});
-  $("#btnGiveup").addEventListener("click",openGiveup);
   $("#giveupYes").addEventListener("click",giveUp);
   $("#helpDont").addEventListener("change",function(){try{localStorage.setItem(KEY_HELP,this.checked?"1":"0");}catch(e){}});
   document.querySelectorAll(".overlay").forEach(function(ov){
