@@ -885,10 +885,10 @@ function shareResult(){
   var score=r.lost?0:scoreForGuess(r.steps);
   var head="Arala"+(arsiv?" Arşiv":"")+" #"+puzzleNo(r.dayNo)+" - "+score+"/5:";
   var lines=[head];
-  if(score>0)lines.push(new Array(score+1).join("🏆"));
+  if(score>0)lines.push(new Array(score+1).join("⭐"));
   lines.push(shareGrid(r));
   lines.push("https://trpuzzle.com/arala/");
-  var txt=lines.join("\n");
+  var txt=lines.join("\n\n");
   function fallback(){
     var ta=document.createElement("textarea");ta.value=txt;
     document.body.appendChild(ta);ta.select();
