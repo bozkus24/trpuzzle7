@@ -375,6 +375,7 @@ function cmp(a,b){
 var WORDS=[],WIDX=new Map(),SET=new Set(),N=0,ANSWERS=[];
 var secret="",secretIdx=-1,lo=0,hi=0,steps=0,done=false,lost=false,gaveUp=false,input="",animating=false;
 var mode="daily",dayNo=0,topSet=false,botSet=false,countedPlayed=false,ready=false;
+var dirs=[]; /* her daraltan tahminin yönü: 't' (alt sınır / cevap sonrada) · 'b' (üst sınır / cevap önde) — paylaşım ızgarası için */
 var KEY_DAY="aradle_day_v1",KEY_DAYS="aradle_days_v2",KEY_STATS="aradle_stats_v2";
 var EPOCH=new Date(2026,0,1);
 var LAUNCH=Math.round((new Date(2026,7,1)-EPOCH)/864e5); /* 1 Ağustos 2026 = 1. bulmaca */
@@ -517,7 +518,7 @@ function loadDays(){
 }
 function saveDay(){
   /* her gün (günlük + arşiv) kendi ilerlemesiyle kaydedilir */
-  try{var m=loadDays();m[String(dayNo)]={top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed};
+  try{var m=loadDays();m[String(dayNo)]={top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed,dirs:dirs.slice()};
     localStorage.setItem(KEY_DAYS,JSON.stringify(m));}catch(e){}
 }
 function stepsForScore(sc){return sc>=5?5:sc>=4?8:sc>=3?11:sc>=2?13:14;}
@@ -527,7 +528,7 @@ function restoreDay(){
     var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
     if(ti!==undefined&&bi!==undefined&&ti<bi&&(s.done||(ti<secretIdx&&secretIdx<bi))){
       lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;gaveUp=!!s.g;countedPlayed=!!s.played;
-      topSet=!!s.ts;botSet=!!s.bs;return;
+      topSet=!!s.ts;botSet=!!s.bs;dirs=Array.isArray(s.dirs)?s.dirs.slice():[];return;
     }
   }
   /* tam durum yoksa sonuç kodundan (KEY_ARC) çözülmüş görünümü kur — eski kayıtlar için cevap yine görünür */
@@ -542,14 +543,14 @@ function restoreDay(){
 function startDaily(){
   resetGuessAnim();
   mode="daily";dayNo=todayNum();secretIdx=secretForDay(dayNo);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=false;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=false;dirs=[];
   restoreDay();render();
 }
 function startArchive(day){
   if(day===todayNum()){startDaily();return;}
   resetGuessAnim();
   mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=true;
+  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=true;dirs=[];
   restoreDay();
   closeModals();render();toastMsg(done?("Arşiv · "+fmtDate(day)+" · çözülmüş"):("Arşiv oyunu · "+fmtDate(day)));
 }
@@ -572,6 +573,7 @@ function submitGuess(instant){
   steps++;ensurePlayed();
   var toTop=cmp(w,secret)<0;
   if(toTop){lo=gi;topSet=true;}else{hi=gi;botSet=true;}
+  dirs.push(toTop?"t":"b"); /* paylaşım ızgarası için tahmin yönünü sakla */
   if(instant){
     input="";
     if(steps>=MAX_GUESSES){loseGame();return;}
@@ -857,12 +859,36 @@ function openStats(daily){
   var sh=$("#btnShare");if(sh)sh.style.display=r.done?"":"none";
   $("#statsModal").classList.add("open");
 }
+function dirsForDay(d){
+  if(d===dayNo&&dirs.length)return dirs.slice();
+  var s=loadDays()[String(d)];
+  return (s&&Array.isArray(s.dirs))?s.dirs.slice():null;
+}
+function shareGrid(r){
+  var BANDS=[5,3,3,2,1],EMPTY="⬜",GREEN="🟩",MADE="🟦",UP="⬆️",DOWN="⬇️";
+  var won=r.done&&!r.lost,greenIdx=won?(r.steps-1):-1;
+  var narrow=won?(r.steps-1):(r.done?(r.steps|0):0); /* daraltan tahmin sayısı */
+  var dd=dirsForDay(r.dayNo);
+  var cells=[];
+  for(var i=0;i<14;i++){
+    if(i===greenIdx)cells.push(GREEN);
+    else if(i<narrow)cells.push(dd?(dd[i]==="t"?UP:DOWN):MADE);
+    else cells.push(EMPTY);
+  }
+  var out=[],p=0;
+  for(var b=0;b<BANDS.length;b++){out.push(cells.slice(p,p+BANDS[b]).join(""));p+=BANDS[b];}
+  return out.join(" - ");
+}
 function shareResult(){
-  var r=statsShown||{lost:lost,steps:steps,mode:mode,dayNo:dayNo};
-  var head=(r.mode==="daily")?("Arala #"+puzzleNo(r.dayNo)):("Arala Arşiv #"+puzzleNo(r.dayNo));
-  var txt;
-  if(r.lost){txt=head+" — Kaybettim (0 puan)\n14 tahminde bulamadım.";}
-  else{var score=scoreForGuess(r.steps);txt=head+" — "+score+"/5 puan\nGizli kelimeyi "+r.steps+". tahminde buldum.";}
+  var r=statsShown||{done:done,lost:lost,gaveUp:gaveUp,steps:steps,mode:mode,dayNo:dayNo};
+  var arsiv=(r.mode!=="daily");
+  var score=r.lost?0:scoreForGuess(r.steps);
+  var head="Arala"+(arsiv?" Arşiv":"")+" #"+puzzleNo(r.dayNo)+" - "+score+"/5:";
+  var lines=[head];
+  if(score>0)lines.push(new Array(score+1).join("🏆"));
+  lines.push(shareGrid(r));
+  lines.push("https://trpuzzle.com/arala/");
+  var txt=lines.join("\n");
   function fallback(){
     var ta=document.createElement("textarea");ta.value=txt;
     document.body.appendChild(ta);ta.select();
