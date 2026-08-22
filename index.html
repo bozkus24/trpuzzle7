@@ -69,6 +69,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px;pad
 
 
 .brandwrap{display:flex;align-items:center;gap:clamp(4px,1.6vw,9px)}
+.brandlink{display:inline-flex;align-items:center;gap:clamp(4px,1.6vw,9px);text-decoration:none;color:inherit;cursor:pointer}
 .logo{display:flex;gap:clamp(2px,.7vw,3px);align-items:center;user-select:none}
 .logo .lt{width:clamp(21px,6vw,27px);height:clamp(21px,6vw,27px);border-radius:3px;background:var(--tile);border:none;color:var(--tile-ink);font-weight:900;font-size:clamp(12px,3.5vw,15px);display:grid;place-items:center}
 .logo .lt.g{background:var(--ok);color:var(--ok-ink)}
@@ -242,7 +243,7 @@ footer code{color:var(--muted)}
 <script>try{var _t=localStorage.getItem("aradle_theme");if(_t==="dark"||_t==="light")document.documentElement.setAttribute("data-theme",_t);}catch(e){}</script>
 <div id="app">
   <header>
-    <div class="brandwrap"><div class="brand" id="brand" role="img" aria-label="Arala"></div><div class="logo" aria-label="Arala"><span class="lt">A</span><span class="lt">R</span><span class="lt g">A</span><span class="lt">L</span><span class="lt">A</span></div></div>
+    <div class="brandwrap"><a class="brandlink" href="/" aria-label="Ana sayfaya dön" title="Ana sayfa"><div class="brand" id="brand" role="img" aria-label="Arala"></div><div class="logo" aria-label="Arala"><span class="lt">A</span><span class="lt">R</span><span class="lt g">A</span><span class="lt">L</span><span class="lt">A</span></div></a></div>
     <div class="hgroup">
       <button class="iconbtn" id="btnFree" aria-label="Arşiv" title="Arşiv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></button>
       <button class="iconbtn" id="btnStats" aria-label="İstatistikler" title="İstatistikler"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="10.5" width="4.7" height="9.5" rx="1.1"/><rect x="9.65" y="4" width="4.7" height="16" rx="1.1"/><rect x="16.3" y="13.5" width="4.7" height="6.5" rx="1.1"/></svg></button>
