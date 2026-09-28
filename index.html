@@ -78,7 +78,15 @@ header{display:flex;align-items:center;justify-content:space-between;gap:6px;pad
 .logo{display:flex;gap:clamp(2px,.7vw,3px);align-items:center;user-select:none}
 .logo .lt{width:clamp(21px,6vw,27px);height:clamp(21px,6vw,27px);border-radius:3px;background:var(--tile);border:none;color:var(--tile-ink);font-weight:900;font-size:clamp(12px,3.5vw,15px);display:grid;place-items:center}
 .logo .lt.g{background:var(--ok);color:var(--ok-ink)}
-@media(max-width:360px){.logo .lt{width:19px;height:19px;font-size:11px;border-radius:3px}}
+@media(max-width:360px){
+.logo .lt{width:18px;height:19px;font-size:11px;border-radius:3px}
+header .hgroup{gap:3px}
+header .brand{width:32px;height:32px}
+#app .statusbar{gap:6px}
+#app .pips{gap:3px}
+#app .sbval{white-space:nowrap}
+#app .pip.gap{margin-left:4px}
+}
 .sub{display:flex;justify-content:center;align-items:center;padding:8px 2px 0;color:var(--muted);font-size:13px;letter-spacing:.4px}
 .statusbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 2px 2px}
 .sbcol{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:46px}
@@ -1529,8 +1537,34 @@ document.addEventListener("DOMContentLoaded",function(){
     Kesme: ['#helpModal .sheet', '#helpGotIt', ['Şeklin içinden geçen bir çizgi çek.','Hedef iki eşit parça: 50:50.','55:45 veya daha dengeli kesimler kazanır.'], '50 │ 50'],
     'Bağla': ['#perdeYardim .modal', '#btnYardimAnladim', ['Ortak bağı olan dört kelimeyi seç.','Onayla; doğru grup birlikte açılır.','Dört grubu bul, dört hata hakkını koru.'], 'ELMA · ARMUT · ERİK · NAR']
   };
+  // Only play surfaces suppress selection; instructions and text inputs remain selectable.
+  const playSurface = '#board, .board, #tahta, #izgara, #keyboard, .keyboard, #klavye, .alpha, .map-wrap, .dragclone, .tp-demo, button, [role="button"]';
+  function isPlayGesture(target) {
+    return target instanceof Element &&
+      !target.closest('input, textarea, [contenteditable]:not([contenteditable="false"])') &&
+      !!target.closest(playSurface);
+  }
+  // Native text/image dragging must not compete with tile pointer handlers.
+  ['selectstart', 'dragstart'].forEach(type => {
+    document.addEventListener(type, event => {
+      if (isPlayGesture(event.target)) event.preventDefault();
+    });
+  });
   const style = document.createElement('style');
   style.textContent = `
+    :is(${playSurface}), :is(${playSurface}) * {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    :is(${playSurface}) img, :is(${playSurface}) svg { -webkit-user-drag: none; }
+    :is(${playSurface}) input, :is(${playSurface}) textarea,
+    :is(${playSurface}) [contenteditable]:not([contenteditable="false"]) {
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
+    }
+
     .tp-quick { text-align:left; font:15px/1.55 system-ui,sans-serif; color:inherit; }
     .tp-quick ol { padding-left:22px; margin:14px 0; }
     .tp-quick li { margin:8px 0; }
