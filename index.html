@@ -1,6 +1,29 @@
 <!doctype html>
 <html lang="tr">
 <head>
+<script src="/assets/game-remote.js"></script>
+<!-- game-security-start -->
+<script>
+/* Kayıtlar güvenilir girdi değildir. Eski geçerli kayıtları koruyarak türleri doğrula. */
+(function () {
+  'use strict';
+  const object = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const count = value => Number.isSafeInteger(value) && value >= 0 ? value : 0;
+  const escape = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function stats(value, fields, buckets, distribution = 'dist') {
+    const result = {...object(value)};
+    fields.forEach(key => result[key] = count(result[key]));
+    if (buckets) {
+      const source = object(result[distribution]);
+      result[distribution] = Object.fromEntries(buckets.map(key => [key, count(source[key])]));
+    }
+    return result;
+  }
+  window.TrPuzzleSecurity = Object.freeze({object, count, escape, stats});
+})();
+</script>
+<!-- game-security-end -->
+
 <meta charset="utf-8">
 <!--AR-HEAD-START-->
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -360,6 +383,8 @@ html.tp-splash-acik{background:#fff}
 
 </script>
 <!-- game-clock-end -->
+<style>#tpPlay:not([data-progress-ready]){visibility:hidden}</style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7993571496408496" crossorigin="anonymous"></script>
 </head>
 <body>
 <div id="tp-splash">
@@ -583,6 +608,107 @@ c0 -41 -6 -73 -15 -88 -19 -28 -100 -82 -139 -92 l-29 -7 7 -83 c8 -101 3
             <h1 class="tp-name">Arala</h1>
     <p class="tp-tag">Alfabetik aralığı daraltarak gizli kelimeye ulaş.</p>
     <button type="button" class="tp-play" id="tpPlay">Oyna</button>
+<!-- TRPUZZLE-PROGRESS-START -->
+<script>
+/* Üretilen dosya: trpuzzlemain/tools/sync_splash_progress.py */
+(function () {
+  "use strict";
+  function readProgress(key) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key));
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    } catch (e) { return {}; }
+  }
+
+  function hasGuesses(value) {
+    return Array.isArray(value) && value.length > 0;
+  }
+
+  function dailyProgress(now, selectedLevel) {
+    const tr = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+    const year = tr.getUTCFullYear(), month = tr.getUTCMonth(), day = tr.getUTCDate();
+    const date = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+    const dayId = Math.floor(Date.UTC(year, month, day) / 86400000);
+    const puzzleNo = dayId - Date.UTC(2026, 9, 3) / 86400000 + 1;
+    const midnight = Date.UTC(year, month, day);
+    const foxNo = Math.floor((midnight - Date.UTC(2026, 7, 1)) / 86400000) + 1;
+    const aralaDay = Math.round((midnight - Date.UTC(2026, 0, 1)) / 86400000);
+
+    const harfle = readProgress("trw-" + date);
+    const settings = readProgress("word500tr.ayarlar");
+    if (selectedLevel) settings.seviye = selectedLevel;
+    const level = ["kolay", "standart", "zor"].includes(settings.seviye) ? settings.seviye : "standart";
+    // Harf500 açılışta son seçilen seviyeyi yükler.
+    const harf500 = readProgress("word500tr.oyun." + level + "." + date);
+    const baklava = readProgress("petek-progress-v1")[dayId] || {};
+    const tilkile = readProgress("foximax-daily-" + foxNo);
+    const bagla = puzzleNo >= 1 ? readProgress("baglantilar.2026-10-03.gunluk." + puzzleNo) : {};
+    const sehirle = readProgress("iller-globle:daily:" + date);
+    const oldArala = readProgress("aradle_day_v1");
+    const arala = readProgress("aradle_days_v2")[aralaDay] ||
+      (oldArala.day === aralaDay ? oldArala : {});
+
+    const started = {
+      Harfle: hasGuesses(harfle.guesses) && !harfle.done && !harfle.win,
+      Harf500: harf500.surum === 1 && hasGuesses(harf500.gecmis) && !harf500.bitti && !harf500.kazandi,
+      Baklava: baklava.phase === "play" && typeof baklava.swapsLeft === "number" &&
+        baklava.swapsLeft > 0 && baklava.swapsLeft < 15,
+      Arala: typeof arala.steps === "number" && arala.steps > 0 && !arala.done && !arala.lost && !arala.g,
+      Tilkile: tilkile.status === "playing" && hasGuesses(tilkile.guessed),
+      // Kesme tek hamlede biter; kaydedilmiş, yarım kalmış bir turu yoktur.
+      Kesme: false,
+      "Bağla": bagla.durum === "oyunda" && hasGuesses(bagla.tahminler),
+      "Şehirle": hasGuesses(sehirle.guesses) && !sehirle.won && !sehirle.gaveUp
+    };
+    // Tüm günlük kayıtlar Türkiye tarihini kullanır; Kesme tek hamlede biter.
+    const kesme = readProgress("kesme2-day-" + date);
+    const aralaResult = readProgress("aradle_result_v1")[aralaDay];
+    const completed = {
+      Harfle: harfle.done === true || harfle.win === true,
+      Harf500: harf500.surum === 1 && (harf500.bitti === true || harf500.kazandi === true),
+      Baklava: baklava.phase === "win" || baklava.phase === "lose",
+      Arala: arala.done === true || arala.lost === true || arala.g === true ||
+        (typeof aralaResult === "number" && (aralaResult === -1 || (aralaResult >= 1 && aralaResult <= 5))),
+      Tilkile: tilkile.status === "won" || tilkile.status === "lost",
+      Kesme: Array.isArray(kesme.cut) && kesme.cut.length === 4,
+      "Bağla": bagla.durum === "kazandi" || bagla.durum === "kaybetti",
+      "Şehirle": sehirle.won === true || sehirle.gaveUp === true
+    };
+    const states = {};
+    Object.keys(started).forEach(function (game) {
+      states[game] = completed[game] ? "completed" : started[game] ? "started" : "new";
+    });
+    return states;
+  }
+
+
+  window.TrPuzzleProgress = dailyProgress;
+  function refresh() {
+    const button = document.getElementById("tpPlay");
+    const title = document.querySelector("#tp-splash .tp-name");
+    if (!button || !title) return;
+    const selected = document.querySelector('#tpSeg [data-seviye][aria-checked="true"]');
+    const state = dailyProgress(new Date(), selected && selected.getAttribute("data-seviye"))[title.textContent.trim()];
+    button.textContent = state === "completed" ? "Sonucu Gör" : state === "started" ? "Devam Et" : "Oyna";
+    button.setAttribute("data-progress-ready", "");
+  }
+  refresh();
+  document.addEventListener("DOMContentLoaded", refresh);
+  window.addEventListener("pageshow", refresh);
+  window.addEventListener("storage", refresh);
+  window.addEventListener("focus", refresh);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); });
+  const segment = document.getElementById("tpSeg");
+  if (segment) {
+    segment.addEventListener("click", refresh);
+    segment.addEventListener("keydown", refresh);
+  }
+  setInterval(function () { if (!document.hidden) refresh(); }, 60000);
+
+})();
+</script>
+<!-- TRPUZZLE-PROGRESS-END -->
+
     <div class="tp-meta">
       <span id="tpDate"></span><br>
       <span id="tpNo"></span>
@@ -782,19 +908,7 @@ var KEY_HELP="aradle_help_hide";
 function helpHidden(){var v=null;try{v=localStorage.getItem(KEY_HELP);}catch(e){}return v==="1";}
 
 /* ---------- kelime havuzu ---------- */
-function loadWords(){
-  // [cevapMetni, kabulMetni] döner: cevaplar gizli kelime; kabul = ek geçerli tahminler
-  if(typeof window.EMBEDDED_WORDS==="string"){
-    return Promise.resolve([window.EMBEDDED_WORDS,(typeof window.EMBEDDED_ACCEPT==="string")?window.EMBEDDED_ACCEPT:""]);
-  }
-  var ans=fetch("cevaplar.txt",{cache:"no-store"}).then(function(r){
-    if(!r.ok)throw new Error("HTTP "+r.status);return r.text();
-  });
-  var acc=fetch("kelimehavuzu.txt",{cache:"no-store"}).then(function(r){
-    return r.ok?r.text():"";
-  }).catch(function(){return "";});
-  return Promise.all([ans,acc]);
-}
+function loadWords(){return fetch('kelimehavuzu.txt',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('Sözlük yüklenemedi');return r.text();}).then(function(t){return [t,''];});}
 function parseSet(text){
   var set=new Set();
   text.split(/\s+/).forEach(function(w){
@@ -816,15 +930,6 @@ function dayHash(day){
   return x;
 }
 /* Gizli kelime CEVAP havuzundan (yaygın kelimeler) seçilir; indeksi tüm WORDS içindeki yeri */
-function secretForDay(day){
-  var base=dayHash(day)%ANSWERS.length;
-  for(var t=0;t<ANSWERS.length;t++){
-    var w=ANSWERS[(base+t)%ANSWERS.length];
-    var i=WIDX.get(w);
-    if(i>0&&i<N-1)return i;
-  }
-  return 1;
-}
 var MONTHS=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 function dateOf(day){return new Date(EPOCH.getTime()+day*864e5);}
 function fmtDate(day){var d=dateOf(day);return d.getDate()+" "+MONTHS[d.getMonth()]+" "+d.getFullYear();}
@@ -867,42 +972,30 @@ function loadDays(){
 }
 function saveDay(){
   /* her gün (günlük + arşiv) kendi ilerlemesiyle kaydedilir */
-  try{var m=loadDays();m[String(dayNo)]={top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed,dr:dirs.join("")};
+  try{var m=loadDays();m[String(dayNo)]={top:WORDS[lo],bot:WORDS[hi],ts:topSet,bs:botSet,steps:steps,done:done,lost:lost,g:gaveUp,played:countedPlayed,dr:dirs.join(""),token:remoteSession&&remoteSession.token,answer:done?secret:null};
     localStorage.setItem(KEY_DAYS,JSON.stringify(m));}catch(e){}
 }
 function stepsForScore(sc){return sc>=5?5:sc>=4?8:sc>=3?11:sc>=2?13:14;}
-function restoreDay(){
-  var s=loadDays()[String(dayNo)];
-  if(s){
-    var ti=WIDX.get(s.top),bi=WIDX.get(s.bot);
-    if(ti!==undefined&&bi!==undefined&&ti<bi&&(s.done||(ti<secretIdx&&secretIdx<bi))){
-      lo=ti;hi=bi;steps=s.steps|0;done=!!s.done;lost=!!s.lost;gaveUp=!!s.g;countedPlayed=!!s.played;
-      dirs=(typeof s.dr==="string")?s.dr.split(""):[];
-      topSet=!!s.ts;botSet=!!s.bs;return;
-    }
-  }
-  /* tam durum yoksa sonuç kodundan (KEY_ARC) çözülmüş görünümü kur - eski kayıtlar için cevap yine görünür */
-  var code=loadArc()[String(dayNo)];
-  if(code==null)return;
-  done=true;
-  if(code<0){lost=true;steps=MAX_GUESSES;}
-  else{lost=false;steps=stepsForScore(code);}
+var remoteSession=null,remotePending=false,remoteRequest=0;
+function applyRemote(v){lo=v.lo;hi=v.hi;steps=v.steps;done=v.done;lost=v.done&&!v.win;gaveUp=v.gaveUp;topSet=v.topSet;botSet=v.botSet;dirs=v.dirs;secret=v.answer||'';}
+async function startRemote(day){
+  var request=++remoteRequest,sv=loadDays()[String(day)],date=new Date(Date.UTC(2026,0,1)+day*864e5).toISOString().slice(0,10),options={date:date,mode:day===todayNum()?'daily':'archive'};
+  if(sv&&sv.token)options.token=sv.token;
+  else if(sv)options.legacyState=sv;
+  else if(loadArc()[String(day)]!=null){var code=loadArc()[String(day)];options.legacyState={top:WORDS[0],bot:WORDS[N-1],steps:code<0?MAX_GUESSES:stepsForScore(code),done:true,lost:code<0,ts:false,bs:false,g:false};}
+  remotePending=true;
+  try{
+    var session=await TrPuzzleRemote.open('arala',options);if(request!==remoteRequest)return;
+    resetGuessAnim();remoteSession=session;mode=options.mode;dayNo=day;input='';countedPlayed=mode!=='daily'||!!(sv&&sv.played);
+    applyRemote(session.view);render();saveDay();
+  }catch(e){if(request===remoteRequest)toastMsg(e.message);}
+  finally{if(request===remoteRequest)remotePending=false;}
 }
-
-/* ---------- oyun akışı ---------- */
-function startDaily(){
-  resetGuessAnim();
-  mode="daily";dayNo=todayNum();secretIdx=secretForDay(dayNo);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=false;dirs=[];
-  restoreDay();render();
-}
-function startArchive(day){
-  if(day===todayNum()){startDaily();return;}
-  resetGuessAnim();
-  mode="archive";dayNo=day;secretIdx=secretForDay(day);secret=WORDS[secretIdx];
-  lo=0;hi=N-1;steps=0;done=false;lost=false;gaveUp=false;input="";topSet=false;botSet=false;countedPlayed=true;dirs=[];
-  restoreDay();
-  closeModals();render();toastMsg(done?("Arşiv · "+fmtDate(day)+" · çözülmüş"):("Arşiv oyunu · "+fmtDate(day)));
+async function startDaily(){await startRemote(todayNum());}
+async function startArchive(day){
+  closeModals();await startRemote(day);
+  if(!done&&!helpHidden())openHelp(true);
+  toastMsg(done?('Arşiv · '+fmtDate(day)+' · çözülmüş'):('Arşiv oyunu · '+fmtDate(day)));
 }
 function ensurePlayed(){
   if(mode!=="daily"||countedPlayed)return;
@@ -911,17 +1004,23 @@ function ensurePlayed(){
 function closeness(i){return Math.max(1,Math.round(100*(1-Math.abs(secretIdx-i)/(N-1))));}
 function fmtDist(d){return "%"+(Math.abs(d)/(N-1)*100).toFixed(1);}
 
-function submitGuess(instant){
-  if(!ready||done||animating)return;
+async function submitGuess(instant){
+  if(!ready||done||animating||remotePending)return;
   if(input.length<5){toastMsg("5 harf girmelisin");shake();return;}
   var w=input;
   if(!SET.has(w)){toastMsg("Kelime havuzunda yok");shake();return;}
-  if(w===secret){steps++;ensurePlayed();winGame();return;}
   var gi=WIDX.get(w);
   if(gi<=lo){toastMsg("Sözlükte "+up(WORDS[lo])+" kelimesinden sonra gelen bir kelime girin ▼");shake();return;}
   if(gi>=hi){toastMsg("Sözlükte "+up(WORDS[hi])+" kelimesinden önce gelen bir kelime girin ▲");shake();return;}
-  steps++;ensurePlayed();
-  var toTop=cmp(w,secret)<0;
+  var request=remoteRequest,view;remotePending=true;
+  try{view=await TrPuzzleRemote.move(remoteSession,up(w));}
+  catch(e){if(request===remoteRequest)toastMsg(e.message);return;}
+  finally{if(request===remoteRequest)remotePending=false;}
+  if(request!==remoteRequest)return;
+  secret=view.answer||'';
+  if(view.win){steps=view.steps;ensurePlayed();winGame();return;}
+  steps=view.steps;ensurePlayed();
+  var toTop=view.lo===gi;
   dirs.push(toTop?"d":"u");
   if(toTop){lo=gi;topSet=true;}else{hi=gi;botSet=true;}
   if(instant){
@@ -963,8 +1062,12 @@ function loseGame(){
   setTimeout(function(){openStats();},1300);
 }
 function openGiveup(){if(done)return;closeModals();$("#giveupModal").classList.add("open");}
-function giveUp(){
-  if(done)return;
+async function giveUp(){
+  if(done||remotePending)return;
+  var request=remoteRequest;remotePending=true;
+  try{var v=await TrPuzzleRemote.move(remoteSession,'giveup');if(request!==remoteRequest)return;secret=v.answer;}
+  catch(e){if(request===remoteRequest)toastMsg(e.message);return;}
+  finally{if(request===remoteRequest)remotePending=false;}
   closeModals();ensurePlayed();
   gaveUp=true;done=true;lost=true;input="";
   markResult(dayNo,-1);
@@ -985,8 +1088,8 @@ function render(){
   tileRow(els.botTiles,botSet?WORDS[hi]:"zzzzz");
   els.topTiles.classList.toggle("ph",!topSet);
   els.botTiles.classList.toggle("ph",!botSet);
-  els.topPct.textContent=topSet?fmtDist(secretIdx-lo):"?";
-  els.botPct.textContent=botSet?fmtDist(hi-secretIdx):"?";
+  els.topPct.textContent=topSet&&remoteSession?"%"+remoteSession.view.topPct:"?";
+  els.botPct.textContent=botSet&&remoteSession?"%"+remoteSession.view.botPct:"?";
   /* sıradaki harf için olası aralık: yazılan önek sınır kelimelerle karşılaştırılır */
   var pos=Math.min(input.length,4);
   var pre=input.slice(0,pos);
@@ -1026,7 +1129,7 @@ function placeConnector(){
   var shown=topSet||botSet;
   els.cdot.style.display=shown?"block":"none";
   if(shown){
-    var f=(hi>lo)?(secretIdx-lo)/(hi-lo):0.5;f=Math.max(0,Math.min(1,f));
+    var f=remoteSession?remoteSession.view.fraction:0.5;f=Math.max(0,Math.min(1,f));
     var pad=9,dTop=lineTop+pad,dBot=lineBot-pad;
     if(dBot<dTop){dTop=dBot=(lineTop+lineBot)/2;}
     els.cdot.style.top=(dTop+f*(dBot-dTop))+"px";
@@ -1123,7 +1226,7 @@ function buildKeyboard(){
   });
 }
 function handleKey(k){
-  if(!ready||done||animating)return;
+  if(!ready||done||animating||remotePending)return;
   if(k==="ENTER"){submitGuess();return;}
   if(k==="BACK"){input=input.slice(0,-1);render();return;}
   if(IDX.has(k)&&input.length<5){input+=k;render();}
@@ -1157,14 +1260,14 @@ function arcRow(day,today,solved,inProg){
   else if(inProg){stat.className="arcstat prog";stat.innerHTML=SVG_PLAY+" Devam ediyor";}
   else{stat.className="arcstat";stat.textContent="";}
   row.appendChild(info);row.appendChild(stat);
-  row.addEventListener("click",function(){startArchive(day);});
+  row.addEventListener("click",function(){if(!ready)return;startArchive(day);});
   return row;
 }
 function openHelp(auto){closeModals();var c=$("#helpDont");if(c)c.checked=helpHidden();var d=document.querySelector(".dontshow-sep");if(d)d.style.display=auto?"":"none";$("#helpModal").classList.add("open");}
 /* stats modalında gösterilen sonuç (paylaşım da bunu kullanır) */
 var statsShown=null;
 function dailyResult(){
-  var dNo=todayNum(),dSecret=WORDS[secretForDay(dNo)];
+  var dNo=todayNum(),saved=loadDays()[String(dNo)],dSecret=mode==="daily"?secret:(saved&&saved.answer||"");
   if(mode==="daily")return {done:done,lost:lost,gaveUp:gaveUp,steps:steps,secret:dSecret,mode:"daily",dayNo:dNo,dirs:dirs};
   var st=loadDays()[String(dNo)];
   if(st&&st.done)return {done:true,lost:!!st.lost,gaveUp:!!st.g,steps:st.steps|0,secret:dSecret,mode:"daily",dayNo:dNo,dirs:(typeof st.dr==="string")?st.dr.split(""):[]};
@@ -1246,7 +1349,7 @@ function shareResult(){
   /* Tek buton: destekleyen cihazda sistem paylaş menüsünü açar (WhatsApp, X,
      Instagram, Telegram, kopyala…); desteklenmeyen yerde panoya kopyalar. */
   if(navigator.share){
-    navigator.share({title:"Arala",text:tam}).catch(function(hata){
+    navigator.share({text:tam}).catch(function(hata){
       if(hata&&hata.name==="AbortError")return; /* kullanıcı iptal etti */
       kopyala();
     });
@@ -1293,7 +1396,7 @@ document.addEventListener("DOMContentLoaded",function(){
   initTheme();
   window.addEventListener("resize",function(){if(ready)placeConnector();});
   buildAlpha();buildPips();buildKeyboard();bindUI();
-  loadWords().then(function(texts){
+  loadWords().then(async function(texts){
     var ansSet=parseSet(texts[0]),accSet=parseSet(texts[1]||"");
     if(ansSet.size<10)throw new Error("az");
     // WORDS = cevaplar ∪ ek kabul edilenler (tümü geçerli tahmin); ANSWERS = gizli kelime adayları
@@ -1302,21 +1405,14 @@ document.addEventListener("DOMContentLoaded",function(){
     WORDS.forEach(function(w,i){WIDX.set(w,i);SET.add(w);});
     ANSWERS=Array.from(ansSet).sort(cmp);
     ready=true;
-    startDaily();
+    await startDaily();
     applyKb();
-    if(!helpHidden())openHelp(true);
+    if(location.hash==="#arsiv" || $("#archiveModal").classList.contains("open"))openArchive();
+    else if(!helpHidden())openHelp(true);
   }).catch(function(err){
-    showFatal("<b>Kelime havuzu yüklenemedi.</b><br><br><code>cevaplar.txt</code> ve <code>kelimehavuzu.txt</code> dosyalarının <code>index.html</code> ile aynı klasörde olduğundan emin olun ve siteyi bir web sunucusu üzerinden açın (ör. GitHub Pages veya <code>python3 -m http.server</code>).<br><br><span style='opacity:.6'>"+String(err&&err.message||err)+"</span>");
+    showFatal("<b>Kelime havuzu yüklenemedi.</b><br><br><code>kelimehavuzu.txt</code> dosyalarının <code>index.html</code> ile aynı klasörde olduğundan emin olun ve siteyi bir web sunucusu üzerinden açın (ör. GitHub Pages veya <code>python3 -m http.server</code>).<br><br><span style='opacity:.6'>"+TrPuzzleSecurity.escape(err&&err.message||err)+"</span>");
   });
-  if(new URLSearchParams(location.search).has("debug")){
-    window.__aradle={
-      state:function(){return {N:N,answers:ANSWERS.length,dayNo:dayNo,secret:secret,secretIdx:secretIdx,lo:lo,hi:hi,steps:steps,done:done,lost:lost,score:(done&&!lost)?scoreForGuess(steps):(lost?0:scoreForGuess(steps+1)),mode:mode,today:todayNum(),words:WORDS,inAnswers:ANSWERS.indexOf(secret)>=0};},
-      guess:function(w){input=low(w);submitGuess(true);},
-      archive:function(day){startArchive(day);},
-      daily:startDaily,
-      openArchive:openArchive
-    };
-  }
+
 });
 })();
 </script>
@@ -1334,7 +1430,7 @@ document.addEventListener("DOMContentLoaded",function(){
   </ul>
   <h2>Sık sorulan sorular</h2>
   <p class="tp-sss"><strong>Yeni bulmaca ne zaman?</strong> Her gün Türkiye saatiyle 00.00'de yenilenir; geçmiş günleri Arşiv'den oynayabilirsin.</p>
-  <p class="tp-sss"><strong>Verilerim nereye gidiyor?</strong> Hiçbir yere, ilerleme ve istatistikler yalnızca kendi tarayıcında tutulur; oyun hesap istemez.</p>
+  <p class="tp-sss"><strong>Verilerim nereye gidiyor?</strong> İlerlemen ve istatistiklerin tarayıcında saklanır; hesap gerekmez. Tahminlerin ve hamlelerin, kontrol edilmek üzere oyun sunucusuna gönderilir.</p>
 </section>
 
 <footer class="tp-footer">
@@ -1422,110 +1518,13 @@ document.addEventListener("DOMContentLoaded",function(){
   if(b) b.addEventListener("click",function(){ s.hidden=true; tpUstSerit(false); });
 })();
 </script>
-<!-- TRPUZZLE-PROGRESS-START -->
-<script>
-/* Üretilen dosya: trpuzzlemain/tools/sync_splash_progress.py */
-(function () {
-  "use strict";
-  function readProgress(key) {
-    try {
-      const value = JSON.parse(localStorage.getItem(key));
-      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
-    } catch (e) { return {}; }
-  }
 
-  function hasGuesses(value) {
-    return Array.isArray(value) && value.length > 0;
-  }
-
-  function dailyProgress(now, selectedLevel) {
-    const tr = new Date(now.getTime() + 3 * 60 * 60 * 1000);
-    const year = tr.getUTCFullYear(), month = tr.getUTCMonth(), day = tr.getUTCDate();
-    const date = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(day).padStart(2, "0");
-    const dayId = Math.floor(Date.UTC(year, month, day) / 86400000);
-    const puzzleNo = dayId - Date.UTC(2026, 7, 1) / 86400000 + 1;
-    const midnight = Date.UTC(year, month, day);
-    const foxNo = Math.floor((midnight - Date.UTC(2026, 7, 1)) / 86400000) + 1;
-    const aralaDay = Math.round((midnight - Date.UTC(2026, 0, 1)) / 86400000);
-
-    const harfle = readProgress("trw-" + date);
-    const settings = readProgress("word500tr.ayarlar");
-    if (selectedLevel) settings.seviye = selectedLevel;
-    const level = ["kolay", "standart", "zor"].includes(settings.seviye) ? settings.seviye : "standart";
-    // Harf500 açılışta son seçilen seviyeyi yükler.
-    const harf500 = readProgress("word500tr.oyun." + level + "." + date);
-    const baklava = readProgress("petek-progress-v1")[dayId] || {};
-    const tilkile = readProgress("foximax-daily-" + foxNo);
-    const bagla = readProgress("baglantilar.gunluk." + puzzleNo);
-    const sehirle = readProgress("iller-globle:daily:" + date);
-    const oldArala = readProgress("aradle_day_v1");
-    const arala = readProgress("aradle_days_v2")[aralaDay] ||
-      (oldArala.day === aralaDay ? oldArala : {});
-
-    const started = {
-      Harfle: hasGuesses(harfle.guesses) && !harfle.done && !harfle.win,
-      Harf500: harf500.surum === 1 && hasGuesses(harf500.gecmis) && !harf500.bitti && !harf500.kazandi,
-      Baklava: baklava.phase === "play" && typeof baklava.swapsLeft === "number" &&
-        baklava.swapsLeft > 0 && baklava.swapsLeft < 15,
-      Arala: typeof arala.steps === "number" && arala.steps > 0 && !arala.done && !arala.lost && !arala.g,
-      Tilkile: tilkile.status === "playing" && hasGuesses(tilkile.guessed),
-      // Kesme tek hamlede biter; kaydedilmiş, yarım kalmış bir turu yoktur.
-      Kesme: false,
-      "Bağla": bagla.durum === "oyunda" && hasGuesses(bagla.tahminler),
-      "Şehirle": hasGuesses(sehirle.guesses) && !sehirle.won && !sehirle.gaveUp
-    };
-    // Tüm günlük kayıtlar Türkiye tarihini kullanır; Kesme tek hamlede biter.
-    const kesme = readProgress("kesme2-day-" + date);
-    const aralaResult = readProgress("aradle_result_v1")[aralaDay];
-    const completed = {
-      Harfle: harfle.done === true || harfle.win === true,
-      Harf500: harf500.surum === 1 && (harf500.bitti === true || harf500.kazandi === true),
-      Baklava: baklava.phase === "win" || baklava.phase === "lose",
-      Arala: arala.done === true || arala.lost === true || arala.g === true ||
-        (typeof aralaResult === "number" && (aralaResult === -1 || (aralaResult >= 1 && aralaResult <= 5))),
-      Tilkile: tilkile.status === "won" || tilkile.status === "lost",
-      Kesme: Array.isArray(kesme.cut) && kesme.cut.length === 4,
-      "Bağla": bagla.durum === "kazandi" || bagla.durum === "kaybetti",
-      "Şehirle": sehirle.won === true || sehirle.gaveUp === true
-    };
-    const states = {};
-    Object.keys(started).forEach(function (game) {
-      states[game] = completed[game] ? "completed" : started[game] ? "started" : "new";
-    });
-    return states;
-  }
-
-
-  window.TrPuzzleProgress = dailyProgress;
-  function refresh() {
-    const button = document.getElementById("tpPlay");
-    const title = document.querySelector("#tp-splash .tp-name");
-    if (!button || !title) return;
-    const selected = document.querySelector('#tpSeg [data-seviye][aria-checked="true"]');
-    const state = dailyProgress(new Date(), selected && selected.getAttribute("data-seviye"))[title.textContent.trim()];
-    button.textContent = state === "completed" ? "Sonucu Gör" : state === "started" ? "Devam Et" : "Oyna";
-  }
-  refresh();
-  window.addEventListener("pageshow", refresh);
-  window.addEventListener("storage", refresh);
-  window.addEventListener("focus", refresh);
-  document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); });
-  const segment = document.getElementById("tpSeg");
-  if (segment) {
-    segment.addEventListener("click", refresh);
-    segment.addEventListener("keydown", refresh);
-  }
-  setInterval(function () { if (!document.hidden) refresh(); }, 60000);
-
-})();
-</script>
-<!-- TRPUZZLE-PROGRESS-END -->
 <!-- game-experience-start -->
 <script>
 /* Oyunların ortak kısa anlatımı ve sonuçtan sonraki gezinme. */
 (function () {
-  const names = ['Harfle','Harf500','Baklava','Arala','Tilkile','Kesme','Bağla','Şehirle'];
-  const paths = ['harfle','harf500','baklava','arala','tilkile','kesme','bagla','sehirle'];
+  const names = ['Harfle','Baklava','Bağla','Kesme','Tilkile','Arala','Şehirle','Harf500'];
+  const paths = ['harfle','baklava','bagla','kesme','tilkile','arala','sehirle','harf500'];
   const title = document.querySelector('#tp-splash .tp-name');
   const game = title && title.textContent.trim();
   const configs = {
@@ -1669,7 +1668,8 @@ document.addEventListener("DOMContentLoaded",function(){
       const message=next?'Bugün bir bulmaca daha?':'Harika, bugünkü sekiz oyunu tamamladın!';
       if(section.firstChild.textContent!==message)section.firstChild.textContent=message;
       const link=section.querySelector('.tp-next-game');
-      if(link.hidden!==!next)link.hidden=!next;
+      link.hidden=false;
+      if(!next) { link.textContent='Arşivden oyna'; link.setAttribute('href','/'+(game==='Şehirle'?'harfle':paths[names.indexOf(game)])+'/#arsiv'); }
       if(next) { const label=next+' · '+(progress[next]==='started'?'Devam Et':'Oyna');if(link.textContent!==label)link.textContent=label;const href='/'+paths[names.indexOf(next)]+'/';if(link.getAttribute('href')!==href)link.setAttribute('href',href); }
     });
   }
