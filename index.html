@@ -803,7 +803,7 @@ c0 -41 -6 -73 -15 -88 -19 -28 -100 -82 -139 -92 l-29 -7 7 -83 c8 -101 3
 <div class="overlay" id="archiveModal" role="dialog" aria-modal="true" aria-label="Arşiv">
   <div class="modal">
     <div class="mhead"><h2 lang="tr">Arşiv</h2><button class="x" data-close aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <p class="dim">1 Ağustos'tan bu yana günlük bulmacalar. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile işaretlenir.</p>
+    <p class="dim">1 Ekim 2026'dan bu yana günlük bulmacalar. Dilediğin güne dokun ve oyna; en üstteki bugünün oyunudur. Çözdüğün günler <svg class="ii" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></svg> ile işaretlenir.</p>
     <div class="arclist" id="arclist"></div>
   </div>
 </div>
@@ -1239,7 +1239,7 @@ function openSettings(){closeModals();syncThemeToggle();applyKb();$("#settingsMo
 function openArchive(){
   closeModals();
   var t=todayNum(),arc=loadArc(),days=loadDays(),host=$("#arclist");host.innerHTML="";
-  var start=Math.round((new Date(2026,7,1)-EPOCH)/864e5);
+  var start=Math.round((new Date(2026,9,1)-EPOCH)/864e5);
   for(var day=t;day>=start&&day>=0;day--){
     var st=days[String(day)];
     var inProg=!!(st&&!st.done&&((st.steps|0)>0)); // başlanmış ama bitmemiş
@@ -1420,7 +1420,7 @@ document.addEventListener("DOMContentLoaded",function(){
 
 <section class="tp-bilgi" id="bilgi">
   <h1>Arala: alfabetik aralığı daraltarak kelimeyi bulma oyunu</h1>
-  <p>Arala'da gizli <strong>beş harfli Türkçe kelime</strong>, ekrandaki üst ve alt kelimenin <strong>alfabetik olarak arasında</strong> bir yerdedir. Her tahminin, sözlükteki bu aralığı yukarıdan ya da aşağıdan daraltır; kelimeyi köşeye sıkıştırıp yakalamak sana kalmış. Sözlük sırası sezgisi ile kelime bilgisini aynı anda çalıştıran, türünün Türkçedeki ilk örneklerinden bir bulmacadır.</p>
+  <p>Arala'da gizli <strong>beş harfli Türkçe kelime</strong>, ekrandaki üst ve alt kelimenin <strong>alfabetik olarak arasında</strong> bir yerdedir. Her tahminin, sözlükteki bu aralığı yukarıdan ya da aşağıdan daraltır; kelimeyi köşeye sıkıştırıp yakalamak sana kalmış. Sözlük sırası sezgisi ile kelime bilgisini aynı anda kullanırsın.</p>
   <h2>Strateji ipuçları</h2>
   <ul>
     <li><strong>Ortadan böl:</strong> En hızlı daraltma, aralığın alfabetik ortasına tahmin atmaktır; ikili arama (binary search) mantığı burada birebir işler.</li>
@@ -1434,8 +1434,10 @@ document.addEventListener("DOMContentLoaded",function(){
 </section>
 
 <footer class="tp-footer">
-  Bir <a href="https://trpuzzle.com/">TrPuzzle</a> oyunu ·
-  <a href="https://trpuzzle.com/">Anasayfa</a> · <a href="https://trpuzzle.com/hakkinda.html">Hakkımızda</a> · <a href="https://trpuzzle.com/gizlilik.html">Gizlilik</a> · <a href="https://trpuzzle.com/kosullar.html">Koşullar</a>
+  Bir <a href="/">TrPuzzle</a> oyunu
+  <nav aria-label="Site bilgileri">
+    <a href="/">Anasayfa</a> · <a href="/hakkinda.html">Hakkımızda</a> · <a href="/iletisim.html">İletişim</a> · <a href="/gizlilik.html">Gizlilik ve Çerezler</a> · <a href="/kosullar.html">Kullanım Koşulları</a>
+  </nav>
 </footer>
 <style>
 /* ── TrPuzzle bilgi bölümü ve mini footer ── */
