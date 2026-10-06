@@ -155,14 +155,14 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto;margin-b
 .guess.oob .tile.filled{border-color:var(--bad)}
 .guess .tile::before{content:none}
 .guess .tile.next::before{content:"•";color:var(--dim);font-size:.5em;opacity:.5;line-height:1}
-.guess.sweep .tile{background:var(--tile);border-color:transparent;color:var(--tile-ink);transition:background .24s ease,color .24s ease,border-color .24s ease}
+.guess.sweep .tile{background:var(--tile);border-color:transparent;color:var(--tile-ink);transition:background .12s ease,color .12s ease,border-color .12s ease}
 .guess.sweep .tile:nth-child(1){transition-delay:0s}
-.guess.sweep .tile:nth-child(2){transition-delay:.11s}
-.guess.sweep .tile:nth-child(3){transition-delay:.22s}
-.guess.sweep .tile:nth-child(4){transition-delay:.33s}
-.guess.sweep .tile:nth-child(5){transition-delay:.44s}
+.guess.sweep .tile:nth-child(2){transition-delay:.045s}
+.guess.sweep .tile:nth-child(3){transition-delay:.09s}
+.guess.sweep .tile:nth-child(4){transition-delay:.135s}
+.guess.sweep .tile:nth-child(5){transition-delay:.18s}
 .guess.sweep .tile::before{content:none}
-.guess.slide{transition:transform .55s cubic-bezier(.45,.05,.25,1)}
+.guess.slide{transition:transform .22s cubic-bezier(.45,.05,.25,1)}
 .guess.win .tile{background:var(--ok);border:none;color:var(--ok-ink);animation:pop .5s both}
 /* Kaybedince de gizli kelime ortada yesil karolarla acilir (galibiyetle ayni gorunum) */
 .guess.lost .tile{background:var(--ok);border:none;color:var(--ok-ink);box-shadow:none;animation:pop .4s both}
@@ -1026,7 +1026,7 @@ async function submitGuess(instant){
   var toTop=view.lo===gi;
   dirs.push(toTop?"d":"u");
   if(toTop){lo=gi;topSet=true;}else{hi=gi;botSet=true;}
-  if(instant){
+  if(instant || window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     input="";
     if(steps>=MAX_GUESSES){loseGame();return;}
     render();saveDay();return;
@@ -1168,7 +1168,8 @@ function shake(){
   void els.guessWrap.offsetWidth;
   els.guessWrap.classList.add("shake");
 }
-var SWEEP_MS=700,SLIDE_MS=580;
+// Son harf: 180 ms gecikme + 120 ms renk geçişi; ardından 220 ms kayış.
+var SWEEP_MS=300,SLIDE_MS=220;
 function runGuessAnim(which,cb){
   animating=true;
   var g=els.guessTiles;
