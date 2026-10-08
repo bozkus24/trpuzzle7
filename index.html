@@ -4,7 +4,7 @@
 <script defer id="tp-privacy-script" src="/assets/privacy-controls.js?v=consent-v1"></script>
 <meta name="google-adsense-account" content="ca-pub-7993571496408496">
 
-<script src="/assets/game-remote.js"></script>
+<script src="/assets/game-remote.js?v=20261008"></script>
 <!-- game-security-start -->
 <script>
 /* Kayıtlar güvenilir girdi değildir. Eski geçerli kayıtları koruyarak türleri doğrula. */
@@ -155,14 +155,14 @@ main{display:flex;flex-direction:column;padding:6px 0 0;margin-top:auto;margin-b
 .guess.oob .tile.filled{border-color:var(--bad)}
 .guess .tile::before{content:none}
 .guess .tile.next::before{content:"•";color:var(--dim);font-size:.5em;opacity:.5;line-height:1}
-.guess.sweep .tile{background:var(--tile);border-color:transparent;color:var(--tile-ink);transition:background .12s ease,color .12s ease,border-color .12s ease}
+.guess.sweep .tile{background:var(--tile);border-color:transparent;color:var(--tile-ink);transition:background .18s ease,color .18s ease,border-color .18s ease}
 .guess.sweep .tile:nth-child(1){transition-delay:0s}
-.guess.sweep .tile:nth-child(2){transition-delay:.045s}
-.guess.sweep .tile:nth-child(3){transition-delay:.09s}
-.guess.sweep .tile:nth-child(4){transition-delay:.135s}
-.guess.sweep .tile:nth-child(5){transition-delay:.18s}
+.guess.sweep .tile:nth-child(2){transition-delay:.16s}
+.guess.sweep .tile:nth-child(3){transition-delay:.32s}
+.guess.sweep .tile:nth-child(4){transition-delay:.48s}
+.guess.sweep .tile:nth-child(5){transition-delay:.64s}
 .guess.sweep .tile::before{content:none}
-.guess.slide{transition:transform .22s cubic-bezier(.45,.05,.25,1)}
+.guess.slide{transition:transform .30s cubic-bezier(.45,.05,.25,1)}
 .guess.win .tile{background:var(--ok);border:none;color:var(--ok-ink);animation:pop .5s both}
 /* Kaybedince de gizli kelime ortada yesil karolarla acilir (galibiyetle ayni gorunum) */
 .guess.lost .tile{background:var(--ok);border:none;color:var(--ok-ink);box-shadow:none;animation:pop .4s both}
@@ -1016,7 +1016,7 @@ async function submitGuess(instant){
   if(gi<=lo){toastMsg("Sözlükte "+up(WORDS[lo])+" kelimesinden sonra gelen bir kelime girin ▼");shake();return;}
   if(gi>=hi){toastMsg("Sözlükte "+up(WORDS[hi])+" kelimesinden önce gelen bir kelime girin ▲");shake();return;}
   var request=remoteRequest,view;remotePending=true;
-  try{view=await TrPuzzleRemote.move(remoteSession,up(w));}
+  try{view=await TrPuzzleRemote.move(remoteSession,up(w),els.guessTiles);}
   catch(e){if(request===remoteRequest)toastMsg(e.message);return;}
   finally{if(request===remoteRequest)remotePending=false;}
   if(request!==remoteRequest)return;
@@ -1168,8 +1168,8 @@ function shake(){
   void els.guessWrap.offsetWidth;
   els.guessWrap.classList.add("shake");
 }
-// Son harf: 180 ms gecikme + 120 ms renk geçişi; ardından 220 ms kayış.
-var SWEEP_MS=300,SLIDE_MS=220;
+// Son harf: 640 ms gecikme + 180 ms renk geçişi; ardından 300 ms kayış.
+var SWEEP_MS=820,SLIDE_MS=300;
 function runGuessAnim(which,cb){
   animating=true;
   var g=els.guessTiles;
@@ -1232,8 +1232,12 @@ function buildKeyboard(){
 function handleKey(k){
   if(!ready||done||animating||remotePending)return;
   if(k==="ENTER"){submitGuess();return;}
-  if(k==="BACK"){input=input.slice(0,-1);render();return;}
-  if(IDX.has(k)&&input.length<5){input+=k;render();}
+  if(k==="BACK"){input=input.slice(0,-1);render();prepareGuess();return;}
+  if(IDX.has(k)&&input.length<5){input+=k;render();prepareGuess();}
+}
+function prepareGuess(){
+  var index=WIDX.get(input);
+  TrPuzzleRemote.prepare(remoteSession,input.length===5&&index>lo&&index<hi?up(input):null);
 }
 
 /* ---------- modallar ---------- */
